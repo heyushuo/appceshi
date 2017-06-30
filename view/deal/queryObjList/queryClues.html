@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../css/faxiezuo.css"/>
+		<script src="../../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/layer2.1/layer.js"></script>
+    	<script src="../../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+		    $(function(){
+				var Request=new UrlSearch(); 
+			    $("#queryObjTypeId").val(Request.id);//设置隐藏域的id
+			    
+				 //提交按钮
+				 $("#btnSure").click(function(){
+					 //---------------------------校验start
+						//1、线索类型校验
+						 var type=$.trim($("#type").val());
+			//			 if (jQuery.trim(type) == '-1'){
+			//					diaLog('请选择线索类型');
+			//					return false;
+			//			 }
+			//			 //2、线索可靠性校验
+						 var reliable=$.trim($("#reliable").val());
+			//			 if (jQuery.trim(reliable) == '-1'){
+			//					diaLog('请选择线索可靠性');
+			//					return false;
+			//			 }
+						 //3、可能导致的事校验
+						 var mayThing=$.trim($("#mayThing").val());
+			//			 if (typeof(mayThing) == "undefined"||jQuery.trim(mayThing) == ''){
+			//				diaLog('请填写可能导致的事情');
+			//				return false;
+			//			 }
+			//			 
+			//			 if(jQuery.trim(mayThing).length>50){
+			//				diaLog('可能导致的事长度不能大于50');
+			//			   return false;
+			//			 }
+			//			 //4、发生的可能性校验
+						 var possibility=$.trim($("#possibility").val());
+			//			 if (typeof(possibility) == "undefined"||jQuery.trim(possibility) == ''){
+			//				diaLog('请填写发生的可能性');
+			//				return false;
+			//			 }
+			//			 var reg = /^\d+(?=\.{0,1}\d+$|$)/
+			//		     if(!reg.test(jQuery.trim(possibility))){
+			//			    diaLog('发生的可能性请填写正数');
+			//			    return false;
+			//		     }
+						 //5、涉及的人员群体校验
+						 var involve=$.trim($("#involve").val());
+			//			 if (typeof(involve) == "undefined"||jQuery.trim(involve) == ''){
+			//				diaLog('请填写涉及的人员群体信息');
+			//				return false;
+			//			 }
+			//			 if(jQuery.trim(involve).length>20){
+			//					diaLog('涉及的人员群体信息长度不能大于20');
+			//				   return false;
+			//			 }
+			//			 //6、线索范围的校验
+						 var cueRange=$.trim($("#cueRange").val());
+			//			 if (typeof(cueRange) == "undefined"||jQuery.trim(cueRange) == ''){
+			//				diaLog('请填写线索范围信息');
+			//				return false;
+			//			 }
+			//			 if(jQuery.trim(cueRange).length>30){
+			//					diaLog('涉及的线索范围长度不能大于30');
+			//				   return false;
+			//			 }
+			//			 //7.影响性质的校验
+						 var influenceProperty=$.trim($("#influenceProperty").val());
+			//			 if (typeof(influenceProperty) == "undefined"||jQuery.trim(influenceProperty) == ''){
+			//				diaLog('请填写影响性质');
+			//				return false;
+			//			 }
+			//			 if(jQuery.trim(influenceProperty).length>20){
+			//					diaLog('影响性质信息长度不能大于20');
+			//				   return false;
+			//			 }
+						 //8.紧急等级的校验
+						 var emergencyLevel=$.trim($("#emergencyLevel").val());
+			//			 if(emergencyLevel==-1){
+			//			 	diaLog('请填写紧急等级');
+			//				return false;
+			//			 }
+						  //9. 处理状态的校验
+						 var treatmentStatus=$.trim($("#treatmentStatus").val());
+			//			if (typeof(treatmentStatus) == "undefined"||jQuery.trim(treatmentStatus) == ''){
+			//				diaLog('请填写处理状态');
+			//				return false;
+			//			 }
+						  //10.线索结果的校验
+						 var clueResourt=$.trim($("#clueResourt").val());
+			//			 if (typeof(clueResourt) == "undefined"||jQuery.trim(clueResourt) == ''){
+			//				diaLog('请填写线索结果');
+			//				return false;
+			//			 }
+			//			  //11.线索来源的校验
+						 var clueSource=$.trim($("#clueSource").val());
+			//			 if (typeof(clueSource) == "undefined"||jQuery.trim(clueSource) == ''){
+			//				diaLog('请填写线索来源');
+			//				return false;
+			//			 }
+						  //12.线索有效期的校验
+						 var endTime=$.trim($("#endTime").val());
+			//			 if (typeof(endTime) == "undefined"||jQuery.trim(endTime) == ''){
+			//				diaLog('请填写线索有效期');
+			//				return false;
+			//			 }
+						if(type==-1&&reliable==-1&&mayThing==""&&possibility==""&&involve==""&&cueRange==""&&influenceProperty==""&&emergencyLevel==-1&&treatmentStatus==""&&clueResourt==""&&clueSource==""&&endTime==""){
+							diaLog("请填写任意一项");
+							return false;
+						}
+			 //---------------------------校验end
+					 $("#btnSure").attr("disabled",true);
+					 var form = $("#form");  
+						var options  = {    
+							url:ctx+'/gongan/app/queryObject/doAddIntelligence.do',   
+							type:'post', 
+							dataType:'json',
+							success:function(data) {
+								$("#btnSure").removeAttr("disabled");
+								if(data.status=='1'){
+									//  <tr id="first"><td>操作</td><td>查询对象类别</td><td>查询对象名称</td><td>对象体征</td><td>具体信息</td><td>备注</td><td>增加时间</td></tr>
+									//给父级的父级添加数据
+									var d=	new Date();
+									var queryInfoCreateDate;
+									if (typeof(data.queryInfoCreateDate) != "undefined"){
+				  	      				d.setTime(data.queryInfoCreateDate);
+				  	      				queryInfoCreateDate=d.format('yyyy-MM-dd HH:mm:ss');
+				  	      			}
+									$("#first",parent.parent.document.body).after("<tr><td><input type=\"hidden\" name=\"queryInfoId"+new Date().getTime()+"hylc:intelligence\" value=\""+data.queryInfoId+"\" /><a href=\"javascript:;\" onclick=\"getTails('intelligence',"+data.objectId+")\">查看&nbsp;</a><a href=\"javascript:;\" onclick=\"doDelQueryObject("+data.queryInfoId+",'intelligence',"+data.objectId+",this)\">删除</a></td><td>"+data.objectType+"</td><td>"+data.objectName+"</td><td>"+data.remarks+"</td><td>"+queryInfoCreateDate+"</td></tr>");
+									parent.closeWindow();//关闭父窗口
+									 closeWindow();
+									
+								}else{
+									diaLog('数据加载异常');
+								}
+								
+							},
+							error:function(){
+								$("#btnSure").removeAttr("disabled");
+								diaLog('数据加载异常');
+								//window.location.href="fankui.html";
+							}
+						};    
+						form.ajaxSubmit(options);
+				 });
+			    //关闭弹窗
+			    function closeLayer(){
+			    	var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+				    parent.layer.close(index);
+			    }
+				$("#btnClose").click(function(){
+					closeLayer();
+				});
+				$("#head").click(function(){
+					closeLayer();
+				})
+			});
+</script>
+	</head>
+	<body>
+	<form id="form">
+		
+		<input type="hidden" name="queryObjTypeId" id="queryObjTypeId"/>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:;" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">查询对象信息增加</span></div>
+			<div class="form">
+				<h1 style="background: #6786ED;">查询对象信息增加</h1>
+				<div class="unit">
+					<label class="text" for="">线索类型</label>
+					<select class="pull-right" name="type" id="type">
+						<option value="-1" >请选择</option>
+						<option value="1" >常规</option>
+					</select>
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索可靠性</label>
+					<select  class="pull-right" name="reliable" id="reliable">
+						<option value="-1" >请选择</option>
+						<option value="1" >可靠</option>
+						<option value="2" >不可靠</option>
+					</select>
+				</div>
+				<div class="unit">
+					<label class="text" for="">可能导致的事</label>
+					<input type="text" class="pull-right" name="mayThing" id="mayThing"  />
+				</div>
+				<div class="unit">
+					<label class="text" for="">发生的可能性(%)</label>
+					<input type="text" class="pull-right" name="possibility" id="possibility"  />
+				</div>
+				<div class="unit">
+					<label class="text" for="">涉及的人员或群体</label>
+					<input type="text" class="pull-right" name="involve" id="involve" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索范围</label>
+					<input type="text" class="pull-right" name="cueRange" id="cueRange" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">影响性质</label>
+					<input type="text" class="pull-right" name="influenceProperty" id="influenceProperty" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">紧急等级(%)</label>
+					<select name="emergencyLevel" id="emergencyLevel">
+						<option value="-1" >请选择</option>
+						<option value="1" >常规</option>
+					</select>
+				</div>
+				<div class="unit">
+					<label class="text" for="">处理状态</label>
+					<input type="text" class="pull-right" name="treatmentStatus" id="treatmentStatus" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索结果</label>
+					<input type="text" class="pull-right" name="clueResourt" id="clueResourt" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索来源</label>
+					<input type="text" class="pull-right" name="clueSource" id="clueSource" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索有效期</label>
+					<input type="date" class="pull-right" name="endTime" id="endTime" />
+				</div>
+				<div class="btnbox">
+					<input id="btnSure" class="btn btn-width1" type="button" value="确定" />
+					<input id="btnClose" class="btn btn-width1" type="button" value="返回" />
+				</div>
+			</div>
+		</div>
+	</form>
+	</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			.index-content{
+				text-indent: 0.05rem;
+				margin: 0.1rem 0.1rem;
+				padding: 0.1rem 0px;
+				border: 1px solid #CBCBCB;
+				font-size: 0.16rem;
+				border-radius: 0.1rem;
+			}
+			.index-content p{
+				padding: 0.05rem 0px;
+			}
+			.home-head{
+				height: 0.4rem;
+				line-height: 0.4rem;
+				position: relative;
+				border-top: 1px solid #CBCBCB;
+				background: #F5F5F5;
+			}
+			.search{
+				position: relative;
+				height: 0.3rem;
+				width: 74%;
+				padding: 0px 0px 0px 0.1rem;
+				line-height: 0.3rem;
+				margin-left: 0.2rem;
+				margin-top: 0.04rem;
+				border: 1px solid #CBCBCB;
+				border-radius: 5px;
+			}
+			.search input{
+				position: absolute;
+				border: none;
+				height: 91%;
+				width: 89%;
+				outline: none;
+				background: #F5F5F5;
+				margin-top: 1px;
+				top: 2px;
+			}
+			.search button{
+				position: relative;
+				left: 0px;
+				top: 0.5rem;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">搜索列表</span></div>
+			<div class="home-head clearfix">
+				<div class="search pull-left">
+					<a href="searchlist.html" class="iconfont icon-11"></a>
+					<input type="search" placeholder="搜索" />
+				</div>
+				<button id="search" class="pull-right" style="color: #333333;margin-right: 0.1rem;padding: 0.06rem;margin-top: 0.06rem;border-radius: 3px;border: none;" >搜索</button>
+			</div>
+		   	<div class="index-content">
+		   	<div class="tuisong common">
+		   		<p><a href="xiezuoxiangqing.html">推送新闻XX测试数据....</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">推送新闻XXXXXX测试数据........</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">推送新闻XXXXXX测试数据....</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">推送新闻XX测试数据...</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">推送新闻XXXXXX测试数据....</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">推送新闻XXXXXX测试数据.....</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">推送新闻XXXXXX测试数据...</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">推送新闻XXXXXX测试数据..</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">推送新闻XX测试数据...</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">YY案例XXXXXX测试数据........</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">XX案例测试数据...</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">YY案例XXXXXX测试数据.......</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">YY案例XXXXXX测试数据.........</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">XX案例测试数据...</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+				<p><a href="xiezuoxiangqing.html">XX案例测试数据.....</a><span class="pull-right" style="margin-right: 0.05rem;" >12-3</span></p>
+		   	</div>
+		   	</div>
+		</div>
+	</body>
+</html>
+<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/layer2.1/layer.js"></script>
+
+<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	window.onload=function(){
+		//rem布局
+		document.documentElement.style.fontSize = innerWidth/3.2 +"px";
+	    window.addEventListener("resize",function(){
+	        document.documentElement.style.fontSize = innerWidth/3.2  + "px";
+	    },false)
+	}	
+</script>
+
+

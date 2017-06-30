@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>关闭广播</title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/pager.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		
+	</head>
+	<body>
+		
+		<div class="box">
+			<form id="form" method="post">
+				<input type="hidden" name="id" id="cooperationId" >
+			<div class="head"><a id="head" href="javascript:window.history.go(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">关闭广播</span></div>
+			<div class="form" style="margin-top: 0.1rem;">
+			<div class="unit">
+				<label class="text" for="rewIntegral">悬赏积分:</label>
+				<input disabled="disabled" type="text" name="rewIntegral" id="rewIntegral" />
+			</div>
+			</div>
+			<h1 style="font-size: 0.16rem; padding: 0.15rem 0px;text-indent: 0.1rem; ">反馈人员列表</h1>
+		    <div class="scroll">
+		    	<table id="myTab" class="zonghetongji" border="1" style="border-collapse: collapse;">
+			    	
+			    </table>
+			    <div id="pager">
+			    	
+			    </div>
+		    </div>
+		  </form>
+		  <div class="btnbox">
+				<input id="close" class="btn btn-width1" type="button" value="关闭广播" />
+				<input id="abandon" class="btn btn-width1" type="button" value="放弃关闭" />
+			</div>
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	$(function(){
+		var url=ctx+"/gongan/app/cooperation/toCloseRadio.do";
+		var request=new UrlSearch();
+		var id=request.id;
+        //var data={"pageNo":1,"id":id};//状态是待反馈，签收人是当前用户的
+		var data={"id":id};
+		var feedBackLength=0;
+		var tabHtml="<tr bgcolor='#F5F5F5' style='height: 0.4rem;' >"
+		    			+"<th>请评分</th><th>反馈人</th><th>反馈单位</th><th>反馈人联系方式</th><th>附件</th><th>反馈内容</th>"
+		    			+"</tr>";
+		 $("#myTab").html(tabHtml);
+		 $("#cooperationId").val(id);
+		//公共分页方法
+		//function commonPager(data,url,callBack){
+			//var pagerBox = document.getElementById('pager');//下标所在的div
+			    $.ajax({
+			      	  type: 'POST',
+			      	  url: url,
+			      	  data: data,
+			      	  dataType:"json",
+			      	  async:false,
+			      	  success: function(data){
+			      	  	console.log(data)
+			      	  	if(data.status==1){
+			      	  		$("#rewIntegral").val(data.rewIntegral);
+			      	  		var list=data.feedbackList;
+			      	  		feedBackLength=list.length;
+			      	  		for(var i=0;i<list.length;i++){
+								//添加反馈列表
+								var commentBacks='';
+								if(typeof(list[i].commentBack) != "undefined"){
+									if(list[i].commentBack.length>9){
+										commentBacks=list[i].commentBack.substring(0, 9)+"...";
+									}else{
+										commentBacks=list[i].commentBack;
+									}
+								}
+								tabHtml+="<tr><td><input type=\"hidden\" name=\"departmentId&"+i+"\" value="+list[i].departmentId+"><input type=\"hidden\" name=\"feedUserId&"+i+"\" value="+list[i].feedUserId+"><input style='width:35px;'  name=\"score&"+i+"\" onBlur=\"chenckNumber(this)\" value=\"0\"><font color=\"red\">分</font><td>"+list[i].feedBackUsrId+"</td><td>"+list[i].departmentName+"</td><td>"+list[i].phone+"</td><td><a href='${cfg.WEB}/ServletDownload?url="+list[i].filePath+"'>附件</a></td><td>"+commentBacks+"</td></tr>";
+							}
+			      	  		$("#myTab").html("");
+	  	      				$("#myTab").html(tabHtml);
+			      	  	}
+//		 	      		var pager = new Pager({
+//		 	                index: data.page.pageNum,//当前页号
+//		 	                total: data.page.totalPages,//总共有多少页
+//		 	                parent: pagerBox,
+//		 	                onchange: doChangePage(data)
+//		 	            });
+			      	  },
+			      	  error:function(){
+			      		  diaLog("error");
+			      	  }
+			  	 });
+			  	 
+		//关闭广播	  	 
+		$("#close").click(function(){
+		var returnVal = window.confirm("确认关闭广播？", "警告");
+		if(returnVal){
+			if(countScore(feedBackLength)==false){
+				diaLog("分配积分不能大于悬赏积分！");
+				return false;
+			}
+			$("#close").attr("disabled",true);
+			var form = $("#form"); 
+			var options  = {    
+				url:ctx+'/gongan/app/cooperation/doCloseRadio.do',   
+				type:'post', 
+				dataType:'json',
+				success:function(data) {
+					$("#close").removeAttr("disabled");
+					 if(data.status=="1"){
+						diaLog("关闭成功！");
+						window.location.href="myXieZuoList.html"
+					}else{
+						diaLog("关闭失败！");
+					} 
+				},
+				error:function(){
+					$("#close").removeAttr("disabled");
+					diaLog("error");
+				}
+			}; 
+		  form.ajaxSubmit(options);
+	   };
+  });
+		//关闭广播
+		$("#abandon").click(function(){
+			window.history.go(-1) ;	
+		})	
+function countScore(lengths){
+	var counts=0;
+	for(var j=0;j<lengths;j++){
+		counts+=Number($('input[name="score&'+j+'"]').val());
+	}
+	diaLog($("#rewIntegral").val())
+	if(counts<=$("#rewIntegral").val()){
+		return true;
+	}else{
+		return false;
+	}
+}
+function chenckNumber(obj){
+	if(isNaN($.trim($(obj).val()))){
+		$(obj).val(0);
+	}
+}
+			  	 
+	});
+	
+</script>

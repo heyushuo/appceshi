@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title></title>
+<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/layer2.1/layer.js"></script>
+<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+ <style>
+ 	input[type='button']{
+				color: #333;
+			    background-color: #fff;
+			    border:1px solid #ccc;
+			    display: inline-block;
+			    padding: 3px 6px;
+			    margin-bottom: 0;
+			    font-size: 14px;
+			    font-weight: normal;
+			    text-align: center;
+			    white-space: nowrap;
+			    vertical-align: middle;
+			    cursor: pointer;
+        		margin: 5px 2px;
+        		outline: none;
+			}
+ </style>
+
+ <script type="text/javascript">
+	$(function(){
+		$.ajax({
+			url:ctx+'/gongan/admin/cooperation/toGetAllLable.do',
+			type:"get",
+			dataType:"json",
+			async:false,
+			success:function(data){
+				console.log(data);
+				var str="";
+				var arr=[];
+				if(data.status==1){
+					var list=data.lableMap;
+					for(var i=0;i<list.length;i++){
+						var item=list[i];
+						str+="<input onclick='selected(this)' type='button' id='"+item.id+"' value='"+item.lableContent+"' />";
+					}
+					$("#box").html(str);
+				}
+			},
+			error:function(){
+				diaLog("error");
+			}
+			
+		})
+		var labelName=$("#labelName",parent.document).val();
+		if(labelName){
+			var arr2=labelName.split(",");
+			for(var i=0;i<arr2.length;i++){
+				var arr1=$("input[type=button]");
+				for(var j=0;j<arr1.length;j++){
+					if(arr2[i]==arr1.eq(j).val()){
+						$("input[type=button]").eq(j).attr("flag","1").css({background:"#6495ed",color:"#fff"});
+					}
+				}
+			}
+		}
+		
+		
+		
+		$("#btnSure").click(function(){
+			var arr=$("input[type=button]").length;
+			var count=0;
+			var newArr=[];
+			var newId=[];
+			for(var i=0;i<arr;i++){
+				if($("input[type=button]").eq(i).attr("flag")==1){
+					count++;
+					newArr.push($("input[type=button]").eq(i).val());
+					newId.push($("input[type=button]").eq(i).attr("id"));
+				}
+			}
+		 	var str=newArr.splice(",");
+			var str1=newId.splice(",");
+			$("#labelName",parent.document).val(str);
+			$("#labelText",parent.document).val(str1); 
+			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+	   	    parent.layer.close(index);//关闭弹框
+		})
+	})
+	
+	function selected(obj){
+		if ($(obj).attr("flag")==1) {
+			$(obj).css("background","").css("color","#333");
+			$(obj).removeAttr("flag");
+		}else{
+			$(obj).attr("flag","1");	
+			$(obj).css("background","#6495ed").css("color","#fff");
+		}
+	}
+ </script>
+</head>
+<body>
+	<div class="head"><a id="head" href="javascript:;" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">标签</span></div>
+	<div id="box" style="padding:10px 10px;margin-bottom:0;text-align:center;">
+		
+	</div>
+	<div style='text-align:center;'>
+		<input id="btnSure" type="submit" style="padding: 6px 12px;margin-top:10px;border:1px solid #ccc;background:#5cb85c;color:#fff;outline:none;" value="确认" />
+	</div>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../iconFont/iconfont.css"/>
+		<script src="../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/layer2.1/layer.js"></script>
+		
+		<script src="../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			.login{
+				background: #FFFFFF;
+				margin-top: 0.2rem;
+				padding: 0px 0.2rem;
+				font-size: 0.16rem;
+				border-bottom: 1px solid #E4E3E6;
+				border-top: 1px solid #E4E3E6;
+			}
+			.account{
+				padding: 0.2rem 0px;
+				border-bottom: 1px solid #E4E3E6;
+			}
+			.account input{
+				border:none;
+				height: 0.2rem;
+				outline: none;
+				font-size: 0.16rem;
+			}
+			.password{
+				padding: 0.2rem 0px;
+			}
+			.password input{
+				border: none;
+				height: 0.2rem;
+				outline: none;
+				font-size: 0.16rem;
+			}
+			p{
+				text-align: center;
+				margin-top: 0.25rem;
+			}
+			p input{
+				width: 85%;
+				height: 0.4rem;
+				background: #007AFF;
+				color: #FFFFFF;
+				text-align: center;
+				border: none;
+				outline: none;
+				-webkit-border-radius: 0.05rem;
+				-moz-border-radius: 0.05rem;
+				border-radius: 0.05rem;
+				font-size: 0.16rem;
+			}
+		</style>
+	</head>
+	<body bgcolor="#EFEFF4">
+		<div class="box">
+			<form id="form">
+				<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">登录</span></div>
+				<div class="login">
+					<div class="account">
+						<label>账号:</label>
+						<input class="common-left" id="phone" name="phone" type="text" placeholder="请输入手机号" />
+					</div>
+					<div class="password">
+						<label>密码:</label>
+						<input id="password" name="password" type="password" placeholder="请输入密码" />
+					</div>
+					<!--手机唯一标识-->
+					<input id="uuid" name="uuid" type="hidden" placeholder="请输入密码" />
+				</div>
+				<p><input id="login" type="button" value="登录" /></p>
+			</form>
+		</div>
+	</body>
+</html>
+		<script type="text/javascript">
+		$(function(){
+			
+			mui.plusReady(function(){
+				var uuid=plus.device.uuid;
+				$("#uuid").val(uuid);
+			})
+			
+			//提交form表单
+			$("#login").click(function(){
+				//1、表单校验
+				var phone=$.trim($("#phone").val());
+				var password=$.trim($("#password").val());
+				
+			    if (typeof(phone) == "undefined"||jQuery.trim(phone) == ''){
+				   diaLog('手机号不能为空');
+				   return false;
+			    }
+			    
+			    var re2=new RegExp(/^1[34578]\d{9}$/);
+		        if(!phone.match(re2)){
+		        	 diaLog('请填写正确的手机号');
+		        	return false;
+		        }
+		        
+		        if (typeof(password) == "undefined"||jQuery.trim(password) == ''){
+				   diaLog('密码不能为空');
+				   return false;
+			    }
+		        
+		        if (jQuery.trim(password).length<6){
+				   diaLog('密码长度不能小于6');
+				   return false;
+			    }
+		        
+				$("#login").attr("disabled",true);
+				//2、提交表单
+				var form = $("#form");  
+				var options  = {    
+					url:ctx+'/gongan/app/user/doLogin.do',
+					type:'post', 
+					dataType:'json',
+					success:function(data) {
+						$("#login").removeAttr("disabled");
+			            if(data.status=='0'){
+			            	diaLog('服务端异常');
+			            }else if(data.status=='1'){
+			            	 var user=data.resultMap.user;
+			            	 var resourceList=data.resultMap.resourceList;
+			            	 localStorage.setItem("user",JSON.stringify(user));
+			            	 localStorage.setItem("resourceList",JSON.stringify(resourceList));
+			            	 window.location.href="../index.html";
+			            }else if(data.status=='2'){
+			            	diaLog('手机号或密码错误');
+			            }
+					},
+					error:function(){
+						$("#login").removeAttr("disabled");
+						diaLog('发送失败');
+					}
+				};    
+				form.ajaxSubmit(options);
+				
+			});
+		});
+		
+		
+	</script>

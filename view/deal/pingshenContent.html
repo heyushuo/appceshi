@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>待反馈协作</title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			window.onload=function(){
+				//rem布局
+				document.documentElement.style.fontSize = innerWidth/3.2 +"px";
+			    window.addEventListener("resize",function(){
+			        document.documentElement.style.fontSize = innerWidth/3.2  + "px";
+			    },false)
+			}	
+
+			$(function(){
+				//获取传过来的参数
+				var urlStr=document.location.search;
+				var arr= urlStr.split("?");
+				var arrData=arr[1].split("&");
+				var objData={};
+				for(var i=0;i<arrData.length;i++){
+					var key=arrData[i].split("=")[0];
+					var val=arrData[i].split("=")[1];
+					objData[key]=val;
+				}
+				$("#send").click(function(){
+					//校验意见
+					var judgeStatus=$("#judgeStatus").val();
+					if(judgeStatus==-1){
+						diaLog("请选择是否同意");
+						return false;
+					};
+					//校验原因
+				   var remark=$("#remark").val();
+				   if (typeof(remark) == "undefined"||$.trim(remark) == ''){
+					   diaLog("请填写原因");
+					   return false;
+				   };
+				   objData.judgeStatus=judgeStatus;
+				   objData.remark=remark;
+				   $.ajax({
+				   	type:"post",
+				   	url:ctx+"/gongan/app/appraial/doJudge.do",
+				   	async:true,
+				   	data:objData,
+				   	datatype:'json',
+				   	success:function(data){
+				   		if(data.status==1){
+				   			window.location.href="daishenpi.html";
+				   		}else{
+				   			diaLog("请求失败");
+				   		}
+				   	},
+				   	error:function(){
+				   		diaLog("评审失败");
+				   	}
+				   });
+				})
+				
+			});
+		</script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">评审</span></div>
+			<div class="form" style="border: none;"  >
+				<div style="margin: 0.1rem;">
+					<span>是否同意:</span>
+					<select id="judgeStatus">
+						<option value="-1">请选择</option>
+						<option value="2">同意</option>
+						<option value="3">不同意</option>
+					</select>
+				</div>
+				<div class="xiezuo-content" style="margin-top: 0.1rem;">
+					<h1>原因</h1>
+					<textarea id="remark" name="remark" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+				</div>
+			</div>
+			<div class="btnbox">
+				<input id="send" class="btn btn-width2" type="button" value="发送" />
+			</div>
+		</div>
+	</body>
+</html>

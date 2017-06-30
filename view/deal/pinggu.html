@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">反馈评估</span></div>
+			<div class="form">
+				<h1 style="background: #6786ED;">评估</h1>
+				<div class="unit">
+					<label class="text" for="feedbackGrade">等级</label>
+					<select name="feedbackGrade" id="feedbackGrade" >
+						<option value="-1">请选择</option>
+						<option value="1">好评</option>
+						<option value="2">中评</option>
+						<option value="3">差评</option>
+					</select>
+				</div>
+				<div class="unit">
+					<label class="text" for="evaluationInstructions">评估说明</label>
+					<select name="evaluationInstructions" id="evaluationInstructions" onfocus="this.defOpt=this.selectedIndex" onchange="this.selectedIndex=this.defOpt;" >
+						<option value="-1">请选择</option>
+						<option value="1">反馈及时且内容完整</option>
+						<option value="2">反馈及时但内容缺失</option>
+						<option value="3">反馈内容不真实</option>
+						<option value="4">其他</option>
+					</select>
+				</div>
+				
+				<div class="unit">
+					<label class="text" for="evaluationScore">评估积分(范围<span id="rand"></span>)</label>
+					<input type="text" style="width: auto;" name="evaluationScore" id="evaluationScore" value="" />
+				</div>
+			</div>
+			<div class="form" style="border: none;padding: 0;" >
+				<div class="xiezuo-content" style="margin: 0;">
+					<h1>评估详情</h1>
+					<textarea id="assessmentDetails" name="" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+				</div>
+			</div>
+			<div class="search-people">
+				<div class="btnbox">
+					<input id="evaluate" class="btn btn-width2" type="button" value="评估" />
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/layer2.1/layer.js"></script>
+
+<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+var urlStr=document.location.search;
+var request=new UrlSearch();
+var id=request.id;
+var rewIntegral=request.rewIntegral;
+	$("#feedbackGrade").change(function(){
+		var grand=$("#feedbackGrade").val();
+		if(grand==1){
+			$("#evaluationInstructions").val("1");
+			var maxMark=Math.round(rewIntegral*1);
+			var minMark=Math.round(rewIntegral*0.9);
+			$("#rand").html(minMark+"~"+maxMark);
+		}else if(grand==2){
+			$("#evaluationInstructions").val("2");
+			var maxMark=Math.round(rewIntegral*0.89);
+			var minMark=Math.round(rewIntegral*0.6);
+			$("#rand").html(minMark+"~"+maxMark);
+		}else{
+			$("#evaluationInstructions").val("3");
+			var maxMark=Math.round(rewIntegral*0.3);
+			var minMark=Math.round(rewIntegral*0);
+			$("#rand").html(minMark+"~"+maxMark);
+		}
+	})
+$("#evaluate").click(function(){
+	var evaluationInstructions=$("#evaluationInstructions").val();
+	var evaluationScore=$("#evaluationScore").val();
+	var assessmentDetails=$("#assessmentDetails").val();
+	var grand=$("#feedbackGrade").val();
+	//校验
+	//1、等级
+   	if(grand=="-1"){
+	   diaLog('请选择等级');
+	   return false;
+   	}
+   	//2、评估说明
+   	if(evaluationInstructions=="-1"){
+	   diaLog('请选择评估说明');
+	   return false;
+   	}
+   	//3、评估范围
+   	if(typeof(evaluationScore) == "undefined"||jQuery.trim(evaluationScore) == ''){
+	   diaLog('请填写评估积分');
+	   return false;
+   	}
+   	if(isNaN(jQuery.trim(rewIntegral))){
+	   diaLog('悬赏积分请填写数字');
+	   $("#rewIntegral").val("");
+	   return false;
+   }
+   var reg = /^\d+(?=\.{0,1}\d+$|$)/
+   if(!reg.test(jQuery.trim(rewIntegral))){
+	   diaLog('悬赏积分请填写正数');
+	   //$("#rewIntegral").val("");
+	   return false;
+   }
+   if(grand==1){
+		maxMark=Math.round(rewIntegral*1);
+		minMark=Math.round(rewIntegral*0.9);
+		if(evaluationScore<minMark||evaluationScore>maxMark){
+   			diaLog("请填写正确范围积分");
+   			return false;
+   		}
+	}else if(grand==2){
+		maxMark=Math.round(rewIntegral*0.89);
+		minMark=Math.round(rewIntegral*0.6);
+		if(evaluationScore<minMark||evaluationScore>maxMark){
+   			diaLog("请填写正确范围积分");
+   			return false;
+   		}
+	}else{
+		maxMark=Math.round(rewIntegral*0.3);
+		minMark=Math.round(rewIntegral*0);
+		if(evaluationScore<minMark||evaluationScore>maxMark){
+   			diaLog("请填写正确范围积分");
+   			return false;
+   		}
+	}
+   	//4、评估详情
+   	if(typeof(assessmentDetails) == "undefined"||jQuery.trim(assessmentDetails) == ''){
+	   diaLog('请填写评估详情');
+	   return false;
+   	}
+	//------校验结束
+	$.ajax({
+		type:"post",
+		url:ctx+"/gongan/app/cooperation/doEvaluationCooper.do?id="+id,
+		async:true,
+		data:{"feedbackGrade":grand,"evaluationInstructions":evaluationInstructions,"evaluationScore":evaluationScore,"assessmentDetails":assessmentDetails},
+		datatype:"json",
+		success:function(data){
+			if(data.status==1){
+				window.location.href="daipinggu.html";
+			}
+			
+		},
+		error:function(){
+			diaLog("获取失败");
+		}
+	});
+})
+</script>

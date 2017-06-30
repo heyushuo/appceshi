@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="format-detection" content="telephone=no">
+<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+<style type="text/css">
+	.select-city-container {
+	position: absolute;
+	width: 83%;
+	height: 320px;
+	top: 50%;
+	left: 50%;
+	margin-top: -170px;
+	margin-left: -130px;
+	background: #ffffff;
+	z-index: 100;
+	border-radius: 8px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.select-city-title {
+	position: absolute;
+	width: 94%;
+	height: 39px;
+	line-height: 50px;
+	left: 3%;
+	top: 0;
+	border-bottom: 1px #c2c2c2 solid;
+	font-weight: 700;
+	z-index: 99999;
+}
+
+.selected-prov {
+	position: relative;
+	max-width: 80%;
+	height: 40px;
+	float: left;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+	-webkit-text-overflow: ellipsis;
+	color: #4169E1;
+	font-size: 14px;
+	padding-right: 5px;
+}
+
+.selected-city {
+	position: relative;
+	max-width: 30%;
+	height: 40px;
+	float: left;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+	-webkit-text-overflow: ellipsis;
+	color: #D8AC62;
+	font-size: 14px;
+	padding-left: 5px;
+	padding-right: 5px;
+	display: none;
+}
+
+.selected-dist {
+	position: relative;
+	max-width: 30%;
+	height: 40px;
+	float: left;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+	-webkit-text-overflow: ellipsis;
+	color: #D8AC62;
+	font-size: 14px;
+	padding-left: 5px;
+	padding-right: 5px;
+	display: none;
+}
+
+.select-close {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	top: 0;
+	right: 0;
+	line-height: 50px;
+	text-align: right;
+	font-size: 12px;
+}
+
+.select-item-container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	box-sizing: border-box;
+	border-top: 40px solid transparent;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	-webkit-text-size-adjust: none;
+	font-size: 14px;
+}
+
+.prov-item-container,
+.city-item-container,
+.dist-item-container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+}
+
+.select-item {
+	/*position: relative;*/
+	width: 94%;
+	height: 39px;
+	border-bottom: 1px #C2C2C2 solid;
+	margin-left: 3%;
+	line-height: 40px;
+}
+.select-item .item1{
+	margin-right: 20px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
+	-webkit-text-overflow: ellipsis;
+}
+.select-item .item2{
+	float:right ;
+	width: 20px;
+}
+</style>
+<title></title>
+</head>
+<body>
+<div class="select-city">
+	<div class="select-city-shade"></div>
+	<div class="select-city-container">
+		<div class="select-city-title">
+			<div class="selected-prov">选择省</div>
+			<div class="select-close" id="btnSure" >完成</div>
+		</div>
+		<div class="select-item-container">
+			<!--<div class="prov-item-container">
+				<div class="select-item" data-prov="0">北京<span>〉</span></div>
+			</div>-->
+		</div>
+	</div>
+</div>
+<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/layer2.1/layer.js"></script>
+<script>
+	//1、加载省级部门http://127.0.0.1:8020/gongan/app/department/queryFirstDept.do
+		     var url = ctx + "/gongan/app/department/queryFirstDept.do";
+			   getData(url);
+			function selected(obj){
+			   		var id=$(obj).attr("id");
+			   		var content=$(obj).find(".item1").text();
+			    	$(".selected-prov").text(content).attr("id",id);
+			    	$("#sheng").remove();
+			    	//设置市级下面的数据
+					$.ajax({
+					        type: 'get',
+						    url:ctx+"/gongan/app/department/queryDeptUserById.do?id="+id,
+						    dataType: 'json',
+						    success: function (data) {
+						    	if(data.status=="1"){
+						    		var str="";
+						    		var departmentList=data.deptList;
+						    		str+='<div id="sheng" class="prov-item-container">';
+						    		for(var i=0;i<departmentList.length;i++){
+						    			var item=departmentList[i];
+						    			str+='<div onclick="selected1(this)" class="select-item" id="'+item.id+'"><div class="item2">〉</div><div class="item1">'+item.name+'</div></div>';
+						    		}
+						    		 str+='</div>';
+		        					$(".select-item-container").html(str);
+						    	}
+						    },
+						    error: function (data) {
+						        diaLog("error");
+						    }
+					    }); 
+			   }
+			
+			function selected1(obj){
+				//设置市级下面的数据
+				var id=$(obj).attr("id");
+		   		var content=$(obj).find(".item1").text();
+		    	$(".selected-prov").text(content).attr("id",id);
+		    	$("#sheng").remove();
+				$.ajax({
+				        type: 'get',
+					    url:ctx+"/gongan/app/department/queryDeptUserById.do?id="+id,
+					    dataType: 'json',
+					    success: function (data) {
+					    	if(data.status=="1"){
+					    		var str="";
+					    		var departmentList=data.deptList;
+					    		console.log(departmentList)
+					    		str+='<div id="sheng" class="prov-item-container">';
+					    		for(var i=0;i<departmentList.length;i++){
+					    			var item=departmentList[i];
+					    			str+='<div onclick="btnSure(this)" class="select-item" id="'+item.id+'"><div class="item2">〉</div><div class="item1">'+item.name+'</div></div>';
+					    		}
+					    		str+='</div>';
+		        				$(".select-item-container").html(str);
+					    	}
+					    },
+					    error: function (data) {
+					        diaLog("error");
+					    }
+				    }); 
+			}
+	//公共调用ajax
+	function getData(url,id){
+		$.ajax({
+	        type: 'get',
+	        url: url,
+	        dataType: 'json',
+	        data:{"id":id},
+	        success: function (data) {
+	        	if(data.status=="1"){
+	        		var str="";
+	        		var list=data.resultMap;
+	        		str+='<div id="sheng" class="prov-item-container">';
+	        		for(var i=0;i<list.length;i++){
+	        			var item=list[i];
+						str+='<div onclick="selected(this)" class="select-item" id="'+item.id+'"><div class="item2">〉</div><div class="item1">'+item.name+'</div></div>';
+	        		}
+        			 str+='</div>';
+        			$(".select-item-container").html(str);
+	        	}
+	        },
+	        error: function (data) {
+	            alert("error");
+	        }
+	    });
+	}
+	
+	var request=new UrlSearch();
+	var status=2;
+	var cooperationId=request.id;
+	var flag=request.flag;
+	$("#btnSure").click(function(){
+		if($(".selected-prov").attr("id")){
+			var newDeptId=$(".selected-prov").attr("id");
+			$.ajax({
+		            url:ctx+'/gongan/app/cooperation/doOperationCoo.do',   
+					type:'post', 
+					data:{"newDeptId":newDeptId,"cooperationId":cooperationId,"flag":flag,"status":status},
+					dataType:'json',
+					success:function(data) {
+							if(data.status=='2'){
+								diaLog("转发成功");
+								var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+								window.parent.location.reload();
+				                parent.layer.close(index);
+							}else{
+								diaLog("设置失败");
+							}
+					},
+				});
+			
+			
+			
+			
+		}else{
+			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+	   	    parent.layer.close(index);//关闭弹框
+		}
+	})
+	function btnSure(obj){
+		var newDeptId=$(obj).attr("id");
+		console.log(flag)
+		$.ajax({
+	            url:ctx+'/gongan/app/cooperation/doOperationCoo.do',   
+				type:'post', 
+				data:{"newDeptId":newDeptId,"cooperationId":cooperationId,"flag":flag,"status":status},
+				dataType:'json',
+				success:function(data) {
+						if(data.status=='2'){
+							diaLog("转发成功");
+							var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+							window.parent.location.reload();
+			                parent.layer.close(index);
+						}else{
+							diaLog("设置失败");
+						}
+				},
+				error:function(){
+					diaLog("error")
+				}
+			});
+	}
+</script>
+</body>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/xiezuozonghetongji.css"/>
+		<script src="../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			.index-content{
+				text-indent: 0.05rem;
+				margin: 0.1rem 0.1rem;
+				padding: 0.1rem 0px;
+				border: 1px solid #CBCBCB;
+				font-size: 0.16rem;
+				border-radius: 0.1rem;
+			}
+			.index-content p{
+				padding: 0.05rem 0px;
+			}
+			.home-head{
+				height: 0.4rem;
+				line-height: 0.4rem;
+				position: relative;
+				border-top: 1px solid #CBCBCB;
+				background: #F5F5F5;
+			}
+			.search{
+				position: relative;
+				height: 0.3rem;
+				width: 74%;
+				padding: 0px 0px 0px 0.1rem;
+				line-height: 0.3rem;
+				margin-left: 0.2rem;
+				margin-top: 0.04rem;
+				border: 1px solid #CBCBCB;
+				border-radius: 5px;
+			}
+			.search input{
+				position: absolute;
+				border: none;
+				height: 91%;
+				width: 89%;
+				outline: none;
+				background: #F5F5F5;
+				margin-top: 1px;
+				top: 2px;
+				background:#fff;
+			}
+			.search button{
+				position: relative;
+				left: 0px;
+				top: 0.5rem;
+				background:#fff;
+			}
+			
+			
+			*{margin: 0;padding: 0;}
+			.artical{
+				cursor: pointer;
+				margin: 10px  0px;
+				background: #fff;
+				padding: 10px 10px;
+			}
+			.title{
+				color: #2929D4;
+			}
+			.content{
+				width: 100%;
+				overflow : hidden;
+				text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-line-clamp:3;
+				-webkit-box-orient: vertical;
+				margin: 5px 0px;
+				font-size: 14px;
+			}
+			.link{
+				color: #1E901E;
+				font-size: 12px;
+			}
+		</style>
+		<script src="../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		<script src="../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/pager.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			function UrlSearch() 
+			{
+			   var name,value; 
+			   var str=location.href; //取得整个地址栏
+			   var num=str.indexOf("?") 
+			   str=str.substr(num+1); //取得所有参数   stringvar.substr(start [, length ]
+
+			   var arr=str.split("&"); //各个参数放到数组里
+			   for(var i=0;i < arr.length;i++){ 
+				    num=arr[i].indexOf("="); 
+				    if(num>0){ 
+					     name=arr[i].substring(0,num);
+					     value=arr[i].substr(num+1);
+					     this[name]=value;
+				     } 
+			    } 
+			} 
+			
+			var url=ctx+"/gongan/app/lucene/queryAll.do";
+			
+			function commonPager(data,url,callBack){
+				var pagerBox = document.getElementById('pager');//下标所在的div
+				    $.ajax({
+				      	  type: 'POST',
+				      	  url: url,
+				      	  data: data,
+				      	  dataType:"json",
+				      	  async:false,
+				      	  success: function(data){
+			 	      		var pager = new Pager({
+			 	                index: data.page.pageNum,//当前页号
+			 	                total: data.page.totalPages,//总共有多少页
+			 	                parent: pagerBox,
+			 	                onchange: doChangePage
+			 	            });
+				      	  },
+				      	  error:function(){
+				      		  diaLog("error");
+				      	  }
+				  	 });
+			}
+			
+			
+			 //2、单击下面某一页的时候执行的查询
+	        function doChangePage(obj){
+	            $.ajax({
+	  	      	  type: 'POST',
+	  	      	  url: url,
+	  	      	  data: {"pageno":obj.index,"qStr":$("#searchContent").val()},
+	  	      	  dataType:"json",
+	  	      	  async:true,
+	  	      	  success: function(data){
+	  	      		 if (typeof(data) != "undefined"&&data.status=='1'&&typeof(data.list) != "undefined"){
+	  	      			 var list=data.list;
+	  	      			 var resultHtml="";
+	  	      			 for(var i=0;i<list.length;i++){
+	  	      				var item=list[i];
+	  	      				var title=item.title;
+	  	      				var createDate=item.createDate;//协作创建日期
+	  	      				var content=item.str;//协作内容
+	  	      				var path=item.strpath;//协作路径
+	  	      			
+							
+							resultHtml+="<div class=\"artical\">"
+							  	  			+"<h2 class=\"title\">"+title+"</h1>"
+							  	  			+"<p class=\"content\">"+content+"</p>"
+							  	  			+"<p ><a class=\"link\" target=\"_blank\" href=\"xiezuoxiangqing.html?id=\""+path+">xiezuoxiangqing.html?id="+path+"</a></p>"
+							  	  		+"</div>";
+	  	      			 }
+	  	      			
+	  	      			 $("#content").html(resultHtml);
+	  	      		 }
+  	      			 
+	  	      	  },
+	  	      	  beforeSend:function(){
+		      	  	$("#content").html("<img src='../img/load.gif'></img>");
+		      	  },
+		      	  complete:function(){
+			      	$("#loading").html("");
+			      },
+
+	  	      	  error:function(){
+	  	      		  diaLog("error");
+	  	      	  }
+	        	 });
+	        }
+	        //3、单击查询按钮执行的查询方法
+	        function query(){
+	        	$("#pager").html("");
+	        	var data={"pageno":1,"qStr": $("#searchContent").val()};
+	        	commonPager(data,url,doChangePage);
+	        }
+			
+			
+			
+			$(function(){
+				var Request=new UrlSearch(); 
+				var searchContent=decodeURI(Request.searchContent);
+			    $("#searchContent").val(searchContent);//设置隐藏域的id
+			    
+		    	//1、页面一加载，查询数据库加载分页列表
+		        var data={"pageno":1,"qStr":searchContent};
+			    commonPager(data,url,doChangePage);
+				
+			});
+			
+			
+		</script>
+	</head>
+	<body>
+		<div style="background:#F1F1F1;" >
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">搜索列表</span></div>
+			<div style="background:#fff;" class="home-head clearfix">
+				<div class="search pull-left">
+					<a href="searchlist.html" class="iconfont icon-11"></a>
+					<input type="text" class="common-left" id="searchContent"   placeholder="搜索" />
+				</div>
+				<button id="search" onclick="query()" class="pull-right" style="background:#fff;color: #333333;margin-right: 0.05rem;padding: 0.06rem;margin-top: 0.04rem;border-radius: 3px;border: 1px solid #CBCBCB;" >搜索</button>
+			</div>
+		   	<div>
+			   	<div class="tuisong common" id="content">
+				  	<div id="loading" style="text-align: center;">
+		    		</div>
+			   	</div>
+			   	<div style="background:#fff;" id="pager"></div>
+		   	</div>
+		</div>
+	</body>
+</html>
+
+
+

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="css/theme.css"/>
+		<link rel="stylesheet" type="text/css" href="css/swiper.min.css"/>
+		<script src="js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/swiper.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/layer2.1/layer.js"></script>
+		<script src="js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/common.js" type="text/javascript" charset="utf-8"></script>
+		<title></title>
+	</head>
+	<body bgcolor="#EFEFF4">
+		<div class="box">
+			<div class="home-head clearfix">
+				<div class="logo pull-left">
+					<img src="img/logo.png"/>
+				</div>
+				<div class="search pull-left">
+					<a href="javascript:;" class="iconfont icon-11"></a>
+					<input type="text" class="common-left" placeholder="搜索" id="searchValue"/>
+				</div>
+				<button id="search" class="pull-right" style="color: #333333;margin-right: 0.1rem;padding: 0.06rem;margin-top: 0.04rem;border-radius: 3px;border: none;" >搜索</button>
+			</div>
+			<div class="nav">
+				<ul class="clearfix">
+					<li class="tabActive"><a href="javascript:;">要闻</a></li>
+					<li><a href="javascript:;">简报</a></li>
+					<li><a href="javascript:;">专栏</a></li>
+					<li><a href="javascript:;">案例</a></li>
+					<select id="sheng" style="border: none;outline: none;float: left;width: 20%;margin-top: 0.03rem;">
+					</select>
+				</ul>
+			</div>
+			<div class="swiper-container swiper1 " id="swiper2" >
+				<div class="swiper-wrapper" id="mySwiper">
+					<!--<div class="swiper-slide"><img src="img/lunbo.jpg"/></div>
+					<div class="swiper-slide"><img src="img/lunbo.jpg"/></div>
+					<div class="swiper-slide"><img src="img/lunbo.jpg"/></div>
+					<div class="swiper-slide"><img src="img/lunbo.jpg"/></div>-->
+				</div>
+				<div class="swiper-pagination"></div>
+			</div>
+			<div class="index-content">
+			<div class="yaowen active common">
+				<div id="importNews" style="background: #FFFFFF;">
+					
+				</div>
+				<div class="loadMore" id="loadMore" style="padding: 0.1rem 0;text-align: center;display:none;">点击加载更多>></div>
+			</div>
+		</div>
+		</div>
+		<div class="footer">
+				<ul class="clearfix">
+					<li>
+						<a href="index.html" style="color:#4169E1;">
+							<div class="iconfont icon-shouyeshouye1"></div>
+							<p>首页</p>
+						</a>
+					</li>
+					<li><a href="./view/deal/searchFace.html" id="faqixiezuo">
+						<div class="iconfont icon-renren"></div>
+						<p>搜脸</p>
+					</a></li>
+					<li class="qianshouxiezuo" ><a href="javascript:;">
+						<div class="iconfont icon-pinggu"></div>
+						<p>鉴面</p>
+						<!--<span id="toBeSigned" class="warn"></span>-->
+					</a></li>
+					<li><a href="javascript:;" id="my">
+						<div class="iconfont icon-iconfontwohover"></div>
+						<p>我的</p>
+					</a></li>
+				</ul>
+			</div>
+	</body>
+</html>
+<script type="text/javascript">
+	$(function(){
+//			$(".nav li").on("click",function(){
+//				var index=$(this).index();
+//				$(".common").eq(index).addClass("active").siblings(".common").removeClass("active");
+//			});
+			$("#search").click(function(){
+				window.location.href="view/searchlist.html";
+			});
+			//0、加载首页地区常量(加载省级部门)
+		    $.ajax({
+		        type: 'get',
+		        url: ctx+'/gongan/app/department/queryFirstDept.do',
+		        dataType: 'json',
+		        success: function (data) {
+		        	var str="<option value='-1'>选择省</option>";
+		        	if(data.status=="1"){
+		        		var list=data.resultMap;
+		        		for(var i=0;i<list.length;i++){
+		        			var item=list[i];
+		        			str+="<option value='"+item.id+"'>"+item.name+"</option>";
+		        		}
+		        		$("#sheng").html(str);
+		        	}
+		        },
+		        error: function (data) {
+		            diaLog("error");
+		        }
+		    });
+		
+			//1、加载轮播图
+			$.ajax({
+  	      	  type: 'POST',
+  	      	  url: ctx+"/gongan/app/user/doFindTopTenUser.do",
+  	      	  dataType:"json",
+  	      	  async:true,
+  	      	  success: function(data){
+  	      	  	console.log(data)
+  	      		  if (typeof(data) != "undefined"&&typeof(data.resultMap) != "undefined"){
+  	      			  var list=data.resultMap;
+  	      			  var resultHtml="";
+  	      			  for(var i=0;i<list.length;i++){
+  	      				  var item=list[i];
+  	      				  //item.logPath
+  	      				resultHtml+="<div class='swiper-slide'><img src='"+ctx+"/gongan/ServletDownload?"+item.logPath+"' /></div>";
+  	      			  }
+  	      			  $("#mySwiper").html(resultHtml);
+  	      			  
+  	      			  
+  	      			var swiper1=new Swiper(".swiper-container",{
+	  	  				speed:1000,//换一张需要的时间
+						autoplayDisableOnInteraction:false,//用户操作图片时轮播停止,离开时继续轮播
+					    loop: true,//循环
+					    autoplay:2000,//每多少秒播放一次   自动播放
+					    // 如果需要分页器 html里也需要添加
+					    //一个显示三个slide
+					    slidesPerView: 4,
+	  	  			});
+  	      			
+  	      			
+  	      		  }
+  	      		  
+  	      	  },
+  	      	  error:function(){
+  	      		  diaLog("error");
+  	      	  }
+    	 });
+			
+			//2、点击我的
+			$("#my").click(function(){
+				if(!localStorage.getItem("user")){
+					window.location.href="view/login.html";//跳转到登录页面
+				}else{
+					window.location.href="my.html";
+				}
+			});
+			
+//			//3、发起协作
+//			$("#faqixiezuo").click(function(){
+//				if(!localStorage.getItem("user")){
+//					window.location.href="view/login.html";//跳转到登录页面
+//				}else{
+//					window.location.href="view/deal/faxiezuo.html";//
+//				}
+//			});
+			
+			
+			//4、搜索协作  
+			$("#search").click(function(){
+				var searchContent=$("#searchValue").val();
+				window.location.href="view/searchlist.html?searchContent="+searchContent;//
+			});
+			
+			//5.要闻,案例,简报,专栏 展示--------------------------
+			var url=ctx+"/gongan/app/contentpublish/ajaxPageList.do";
+			var pageNo=1,pagaSize=10,index=1;
+			var d=	new Date();
+			var str="";
+			$.ajax({
+	  	      	  type: 'get',
+	  	      	  url: url,
+	  	      	  data:{"pageNo":pageNo,"pagaSize":pagaSize,"messType":1},
+	  	      	  dataType:"json",
+	  	      	  async:true,
+	  	      	  beforeSend:function(){
+	  	      		var index = layer.load(2,{});
+	  	      	  },
+	  	      	 complete:function(){
+	  	      		layer.close(index)
+	  	      	  },
+	  	      	  success: function(data){
+	  	      	  	console.log(data)
+	  	      	  	str="";
+	  	      	  	if(data.list.length!=0){
+		  	      	  	for(var i=0; i<data.list.length;i++){
+		  	      	  		//格式化协作发起时间
+		  	      			if (typeof(data.list[i].releaseDate) != "undefined"){
+		  	      				d.setTime(data.list[i].releaseDate);
+		  	      				releaseDate=d.format('yyyy-MM-dd');
+		  	      			}
+		  	      	  		str+="<div  onclick=Detail("+data.list[i].id+") class='item'><div class='pull-right item2' style='margin-right: 0.05rem;' >"+releaseDate+"</div><div class='item1'>"+data.list[i].messHeader+"</div></div>"
+		  	      	  	}
+			  	      	if(data.page.totalPages==pageNo){
+		  	      	 		$("#loadMore").css("display","none");
+		  	      	 	}else{
+		  	      	 		$("#loadMore").css("display","block");
+		  	      	 	}
+		  	      	 	$("#importNews").html(str);
+		  	      	}else{
+		  	      		$("#importNews").html("<div  class='item' style='text-align:center;'>暂无数据</div>");
+		  	      		$("#loadMore").css("display","none");
+		  	      	}
+	  	      	 	
+	  	      	  },
+	  	      	  error:function(){
+	  	      		  diaLog("error");
+	  	      	  }
+	        	 });
+	        //6、切换加载要闻,案例,简报,专栏 展示
+			$(".nav ul li").click(function(){
+			    index=$(this).index()+1;
+			    if(index>1){
+			    	index=index+1;
+			    }
+			    console.log(index)
+				str="";
+				pageNo=1;
+				$(this).addClass("tabActive").siblings().removeClass("tabActive");
+				$.ajax({
+	  	      	  type: 'get',
+	  	      	  url: ctx+"/gongan/app/contentpublish/ajaxPageList.do?messType="+index,
+	  	      	  data:{"pageNo":pageNo,"pagaSize":pagaSize},
+	  	      	  dataType:"json",
+	  	      	  success: function(data){
+	  	      	  	console.log(data)
+	  	      	  	if(data.list.length!=0){
+	  	      	  		for(var i=0; i<data.list.length;i++){
+	  	      	  		//格式化协作发起时间
+	  	      			if (typeof(data.list[i].releaseDate) != "undefined"){
+	  	      				d.setTime(data.list[i].releaseDate);
+	  	      				releaseDate=d.format('yyyy-MM-dd');
+		  	      			}
+		  	      	  		str+="<div onclick=Detail("+data.list[i].id+") class='item'><div class='pull-right item2' style='margin-right: 0.05rem;' >"+releaseDate+"</div><div class='item1'>"+data.list[i].messHeader+"</div></div>"
+		  	      	  	}
+		  	      	 	if(data.page.totalPages==pageNo){
+		  	      	 		$("#loadMore").css("display","none");
+		  	      	 	}else{
+		  	      	 		$("#loadMore").css("display","block");
+		  	      	 	}
+		  	      	 	$("#importNews").html(str);
+	  	      	  	}else{
+	  	      	  		$("#importNews").html("<div  class='item' style='text-align:center;'>暂无数据</div>");
+	  	      	  		$("#loadMore").css("display","none");
+	  	      	  	}
+	  	      	  },
+	  	      	  error:function(){
+	  	      		  diaLog("error");
+	  	      	  }
+	        	 });
+			});
+			//7、加载更多 要闻,案例,简报,专栏 展示
+			$("#loadMore").click(function(){
+				pageNo++;
+				console.log(index)
+				$.ajax({
+	  	      	  type: 'get',
+	  	      	  url: url,
+	  	      	  data:{"pageNo":pageNo,"pagaSize":pagaSize,"messType":index,"province":1},
+	  	      	  dataType:"json",
+	  	      	  async:true,
+	  	      	  success: function(data){
+	  	      	  	for(var i=0; i<data.list.length;i++){
+	  	      	  		//格式化协作发起时间
+	  	      			if (typeof(data.list[i].releaseDate) != "undefined"){
+	  	      				d.setTime(data.list[i].releaseDate);
+	  	      				releaseDate=d.format('yyyy-MM-dd');
+	  	      			}
+	  	      	  		str+="<div onclick=Detail("+data.list[i].id+") class='item'><div class='pull-right item2' style='margin-right: 0.05rem;' >"+releaseDate+"</div><div class='item1'>"+data.list[i].messHeader+"</div></div>"
+	  	      	  	}
+	  	      	 	if(data.page.totalPages==pageNo){
+	  	      	 		$("#loadMore").css("display","none");
+	  	      	 	}else{
+	  	      	 		$("#loadMore").css("display","block");
+	  	      	 	}
+	  	      	 	$("#importNews").html(str);
+	  	      	  },
+	  	      	  error:function(){
+	  	      		  diaLog("error");
+	  	      	  }
+	        	 });
+			});
+			//8、切换不同的地区触发的事件,加载内容   要闻,案例,简报,专栏 展示
+			$("#sheng").change(function(){
+				
+				var province=$(this).children('option:selected').val();//获取选择省份的id
+				var pageNo=1;
+				var pagaSize=10;
+				
+				$.ajax({
+	  	      	  type: 'get',
+	  	      	  url: ctx+"/gongan/app/contentpublish/ajaxPageList.do",
+	  	      	  data:{"pageNo":pageNo,"pagaSize":pagaSize,"province":province,"messType":index},
+	  	      	  dataType:"json",
+	  	      	  async:true,
+	  	      	  success: function(data){
+	  	      	  	if(data.list.length!=0){
+	  	      	  		for(var i=0; i<data.list.length;i++){
+	  	      	  		//格式化协作发起时间
+	  	      			if (typeof(data.list[i].releaseDate) != "undefined"){
+	  	      				d.setTime(data.list[i].releaseDate);
+	  	      				releaseDate=d.format('yyyy-MM-dd');
+		  	      			}
+		  	      	  		str+="<div onclick=Detail("+data.list[i].id+") class='item'><div class='pull-right item2' style='margin-right: 0.05rem;' >"+releaseDate+"</div><div class='item1' >"+data.list[i].messHeader+"</div></div>"
+		  	      	  	}
+	  	      	  		
+		  	      	 	if(data.page.totalPages==pageNo){
+		  	      	 		$("#loadMore").css("display","none");
+		  	      	 	}else{
+		  	      	 		$("#loadMore").css("display","block");
+		  	      	 	}
+		  	      	 	$("#importNews").html(str);
+		  	      	 	
+	  	      	  	}else{
+	  	      	  		$("#importNews").html("<div class='item' style='text-align:center;>暂无数据</div>");
+	  	      	  		$("#loadMore").css("display","none");
+	  	      	  	}
+	  	      	  },
+	  	      	  error:function(){
+	  	      		  diaLog("error");
+	  	      	  }
+	        	 });
+			
+			});
+			//9、加载个人信息 
+				//获取localStorage里面的用户信息
+				$(".warn").css("display","none");
+				if(localStorage.getItem("user")){
+				 	var userInfo=JSON.parse(localStorage.getItem("user"));
+				 	var userId=userInfo.id;//发起人id
+					$.ajax({
+			  	      	  type: 'POST',
+			  	      	  url: ctx+"/gongan/app/user/doSelectUser.do?userId="+userId,
+			  	      	  dataType:"json",
+			  	      	  async:false,
+			  	      	  success: function(data){
+			  	      		  if (typeof(data) != "undefined"){
+			  	      			  //用户待签收的协作条数
+			  	      			  if(data.toBeSigned==0){
+			  	      			  	$(".warn").css("display","none");
+			  	      			  }else{
+			  	      			  	$(".warn").css("display","block");
+			  	      			  	$("#toBeSigned").html(data.toBeSigned); 
+			  	      			  }
+			  	      			 
+			  	      		  }
+			  	      	  },
+			  	      	  error:function(){
+			  	      		  diaLog("error");
+			  	      	  }
+		        	 });
+		        }
+				
+				
+				
+	});
+	//首页情报小节详情
+	function Detail(id){
+		window.location.href="./view/deal/articleDetail.html?id="+id;
+	}
+</script>

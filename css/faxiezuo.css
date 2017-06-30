@@ -1,0 +1,220 @@
+.form{
+	/* margin: 0.2rem 0 0.2rem 0; */
+	/* border: 1px solid #CBCBCB; */
+	padding: 0 0 0.2rem 0;
+	/*border-radius: 0.1rem;*/
+	background: #fff;
+}
+.form h1{
+	font-size: 0.16rem;
+	text-indent: 0.1rem;
+	/*background: #F5F5F5;*/
+	border-bottom: 1px solid #CBCBCB;
+	padding: 0.1rem 0;
+	/*border-radius: 0.1rem 0.1rem 0 0;*/
+	color:#000000;
+	/*color: white;*/
+	background: #ffffff;
+}
+.form .unit{
+	position: relative;
+    padding: 0.1rem 0.15rem 0.1rem 0.1rem;
+    border-bottom: 1px solid #cdcdcd;
+}
+.form .unit input{
+	position: absolute;
+	right: 0.1rem;
+	/* border: 1px solid #DCDCDC; */
+	outline: none;
+}
+.form .unit select{
+	position: absolute;
+	right: 0.05rem;
+	outline: none;
+}
+
+.search-people{
+	width: 100%;
+	margin: 0 auto;
+}
+.search-people h1{
+	font-size: 0.16rem;
+	text-indent: 0.1rem;
+	/*background: #F5F5F5;*/
+	border-bottom: 1px solid #CBCBCB;
+	padding: 0.1rem 0;
+	/*border-radius: 0.1rem 0.1rem 0 0;*/
+	background: #ffffff;
+	color:#000000;
+}
+.search-people .sp-nav{
+	width: 100%;
+	border-top: 1px solid #CBCBCB;
+}
+.search-people .sp-nav li{
+	width: 20%;
+	text-align: center;
+	padding: 0.05rem 0px;
+	box-sizing: border-box;
+}
+.search-people .sp-nav li:first-child{
+	border-left: 1px solid #CBCBCB;
+}
+.search-people .sp-nav li{
+	border-right: 1px solid #CBCBCB;
+}
+.table1{
+	width: 100%;
+}
+.table1 tr:nth-child(1) td{
+	width: 33.3%;
+	text-align: center;
+	padding: 0.06rem;
+	border-bottom:1px solid #CBCBCB;
+}
+.table1 tr:nth-child(2),.table1 tr:nth-child(4){
+	height: 1rem;
+}
+.table1 tr:nth-child(2) td{
+	width: 33.3%;
+	text-align: center;
+	padding: 0.06rem;
+	border-bottom:1px solid #CBCBCB;
+}
+.table1 tr:nth-child(4) td{
+	width: 33.3%;
+	text-align: center;
+	padding: 0.06rem;
+	border-bottom:1px solid #CBCBCB;
+}
+.table1 tr:nth-child(3) td{
+	width: 33.3%;
+	text-align: center;
+	padding: 0.06rem;
+	border-bottom:1px solid #CBCBCB;
+}
+.xiezuo-content{
+	margin-top: 0.1rem;
+}
+.xiezuo-content h1{
+	padding: 0.05rem;
+}
+.xiezuo-content textarea{
+	width: 100%;
+	height: 1rem;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+.unit1{
+	position:relative;
+	padding: 0.2rem 0.2rem;
+    border-bottom: 1px solid#cdcdcd;
+}
+.send-unit1{
+	margin: 0.1rem 0rem;
+}
+.unit1 select{
+	position: absolute;
+	right: 0px;
+}
+.unit1 input {
+    position: absolute;
+    right: 0.1rem;
+}
+.fujian{
+	width: 100%;
+	/*height: 0.5rem;*/
+	/* border:1px solid #CBCBCB ; */
+	border-top: none;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border-bottom: 1px solid #cdcdcd;
+}
+.fujian input{
+	padding: 0.02rem;
+	margin: 0.1rem 0.05rem;
+}
+/*閺屻儴顕楃�纭呰杽*/
+.scroll{
+	width: 100%;
+	overflow-x: scroll;
+	/*height: 2.57rem;*/
+}
+.zonghetongji{
+	/*height: 2.57rem;*/
+	width: 8rem;
+	border: 1px solid #CBCBCB; 
+	
+}
+.zonghetongji tr:nth-child(1){
+	width: 100%;
+}
+.zonghetongji tr:nth-child(n+2){
+	width: 100%;
+	height: 0.3rem;
+	text-align: center;
+	/*background: red;*/
+}
+.zonghetongji tr:nth-child(n+2) td{
+	height: 0.3rem;
+	text-align: center;
+	
+}
+.zonghetongji tr:nth-child(1) td{
+/* 	width: 0.8rem;
+	height: 0.2rem; */
+	padding: 0.05rem;
+	text-align: center;
+	box-sizing: border-box;
+	border-right: 1px solid #CBCBCB;
+	border-bottom: 1px solid #CBCBCB;
+}
+.zonghetongji tr:nth-child(1) td:nth-last-child{
+	border-right: none;
+}
+h1{
+	padding: 0.05rem 0px;
+}
+
+/* input妗嗙編鍖�*/
+.a-upload{
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	font-size: 0.14rem;
+}
+.a-upload .fileName{
+	margin-left: 0.08rem;
+}
+.a-upload .fileContent{
+	height: 0.35rem;
+	line-height: 0.34rem;
+	padding: 0px 0.05rem;
+	display: inline-block;
+	border: 1px solid #CCCCCC;
+	margin: 0.1rem 0 0.1rem 0.1rem;
+	-webkit-border-radius: 0.05rem;
+	-moz-border-radius: 0.05rem;
+	border-radius: 0.05rem;
+}
+.a-upload  input {
+	width: 40%;
+	height: 0.35rem;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    display: inline-block;
+    outline: none;
+}
+/*相同样式*/
+.border-none{
+	border:none !important;
+}
+/*文件下载和上传的样式*/
+.downCommon tr td{
+	padding: 0.05rem 0;
+}

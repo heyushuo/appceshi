@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="../../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../iconFont/iconfont.css"/>
+		<script src="../../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			.localList,.localPeople{
+				display: none;
+			}
+			.localList li,.localPeople li{
+	    		float: none;
+	    		font-size: 0.16rem;
+	    		text-align: center;
+	    		padding: 15px 20px;
+	    		background: white;
+	    		border-bottom: 1px solid #E4E3E6;
+	    	}
+			.tabHead{
+	    		width: 100%;
+	    		height: 0.5rem;
+	    		background: #EFEFF4;
+	    	}
+	    	.tabHead span{
+	    		display: inline-block;
+	    		width: 50%;
+	    		height: 0.5rem;
+	    		line-height: 0.5rem;
+	    		text-align: center;
+	    		/*border-left: 1px solid grey;
+	    		border-right: 1px solid grey;*/
+	    		-webkit-box-sizing: border-box;
+	    		-moz-box-sizing: border-box;
+	    		box-sizing: border-box;
+	    	}
+	    	.tabHead span:nth-child(1){
+	    		border-right: 1px solid grey;
+	    	}
+	    	.show{
+	    		display: block;
+	    	}
+	    	.active{
+	    		background: white;
+	    	}
+		</style>
+		<script src="../../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/layer2.1/layer.js"></script>
+		<script src="../../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+		window.onload=function(){
+			//rem布局
+			document.documentElement.style.fontSize = innerWidth/3.2 +"px";
+		    window.addEventListener("resize",function(){
+		        document.documentElement.style.fontSize = innerWidth/3.2  + "px";
+		    },false);
+		    var urlStr=document.location.search;
+		    var countryId="";
+		    var arr=new Array();
+		    var str="";
+		    var str1="";
+		    var arr= urlStr.split("?");
+			countryId=arr[1].split("=")[1];
+		    var url=ctx+"/gongan/app/department/queryDeptUserById.do?id="+countryId;
+			getCityData();
+			//获取省市的ajax请求
+			function getCityData(){
+				$.ajax({
+			        type: 'get',
+				    url: url,
+				    dataType: 'json',
+				    success: function (data) {
+				    	for(var i=0;i<data.deptList.length;i++){
+				    		str+="<li><a href='javascript:;'>"+data.deptList[i].name+"</a></li>"
+				    	}
+				    	$("#localList").html(str);
+				    	str="";
+				    	
+				    	
+				    	$("#localList").on("click","li",function(){
+				    		var index=$(this).index();
+				    		diaLog();
+				    		//window.location.href="people.html?id="+data.deptList[index].id;
+				    	})
+				    },
+				    error: function (data) {
+				        diaLog("error");
+				        }
+				    }); 
+			}
+		    
+		}
+		</script>
+	</head>
+
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">直辖县</span></div>
+			<div id="tabHead" class="tabHead"><span class="active" >地区</span></div>
+			<div class="tabBox">
+				<ul id="localList" class="localList show">
+					<!--
+					<li><a href="javascript:;">新疆</a></li>
+					<li><a href="javascript:;">上海</a></li>
+					<li><a href="javascript:;">杭州</a></li>
+					<li><a href="javascript:;">深圳</a></li>
+					<li><a href="javascript:;">北京</a></li>
+					<li><a href="javascript:;">新疆</a></li>
+					-->
+				</ul>
+				<ul id="localPeople" class="localPeople">
+					<!--<li><a href="javascript:;">新疆</a></li>
+					<li><a href="javascript:;">上海</a></li>
+					<li><a href="javascript:;">杭州</a></li>
+					<li><a href="javascript:;">深圳</a></li>
+					<li><a href="javascript:;">北京</a></li>
+					<li><a href="javascript:;">新疆</a></li>
+					-->
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

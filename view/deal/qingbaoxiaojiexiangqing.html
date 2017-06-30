@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+    	<script src="../../js/mui.min.js"></script>
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">情报小节详情</span></div>
+			<form id="form">
+				<div class="form">
+					<div class="unit">
+						<label class="text" for="title">标题</label>
+						<input type="text" name="title" id="title" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="company">单位</label>
+						<input type="text" name="company" id="company" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="uploadUser">上传人</label>
+						<input type="text" name="uploadUser" id="uploadUser" />
+					</div>
+				</div>
+				<div class="xiezuo-content">
+					<h1 class="border-none">协作内容</h1>
+					<textarea id="content" name="content"  rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+				</div>
+				<div class="search-people">
+					<h1>下载附件</h1>
+					<div id="dowmFile">
+				    	<table class="downCommon" id="files" style="width: 100%;border-collapse: collapse;border: 1px solid #CBCBCB;text-align:center;" border="1" >
+					    </table>
+				    </div>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	$(function(){
+		var urlData=new UrlSearch;
+		id=urlData.id;
+		$.ajax({
+			type:"get",
+			url:ctx+"/gongan/app/intelligence/queryIntelligenceDetail.do",
+			async:true,
+			dataType:"json",
+			data:{"intelligenceId":id},
+			success:function(data){
+				console.log(data);
+				if(data.status==1){
+					var item=data.map;
+					$("#title").val(item.title);//标题
+					$("#company").val(item.departName);//单位
+					$("#uploadUser").val(item.name);//上传人
+					$("#content").val(item.content);//协作内容
+					$("#fileName").text(item.filePath)//文件路径
+					if(typeof(item.filePath)!="undefined"){
+						var files=item.filePath;
+						var path=files.split(";");
+						var name='';
+						var fileHtml="";
+						for(var k=0;k<path.length-1;k++){
+							var filename=path[k].split("=")[2];
+							var url=path[k];
+							name +=filename+"&nbsp;";
+							fileHtml += "<tr><td><a href='javascript:;'>"+filename+"</a>&nbsp;</td><td width='30%' onclick='downloadfile(\""+url+"\")' >下载</td></tr>";
+						}
+						$("#files").html(fileHtml);
+					}
+				}
+			},
+			error:function(){
+				diaLog("error");
+			}
+		});
+	})
+	
+	//文件下载和图片下载
+			function downloadfile(path) {
+			var fileUrl=ctx+"/gongan/ServletDownload?"+path;
+//          var fileUrl = server.pub.OaDownFile + businessid+"/"+name;
+            var encodeUrl=encodeURI(fileUrl);//文件的具体地址，具体到文件名称
+            console.log(encodeUrl);
+            console.log(fileUrl);
+           
+            console.log("下载文件地址"+encodeURI(encodeUrl));
+            var dtask = plus.downloader.createDownload(encodeUrl, { method: "GET" });//新建下载任务
+            var w = plus.nativeUI.showWaiting("开始下载...");
+            dtask.addEventListener("statechanged", function (task, status) {
+            	console.log(task.state)
+                switch (task.state) {
+                    case 3:	// 已接收到数据
+                        if (w) {
+                            w.setTitle("数据下载中：" + task.downloadedSize + "/" + task.totalSize);
+                        }
+                        break;
+                    case 4:	// 下载完成
+                        if (status == 200) {
+                            if (w) {
+                                w.close();
+                            }
+						var reg=/^.*(.jpg|.png|.gif|.ps|.jpeg|.webp)$/i;
+                           if(reg.test(task.filename)){
+                           		plus.gallery.save(task.filename, function() {
+							    mui.confirm("打开相册", "打开相册？", ["打开", "不看"], function(event) {
+							        var gindex = event.index;
+							        console.log(gindex)
+							        if(gindex == 0) {
+							            plus.gallery.pick(function(file) {
+							                mui.toast("你选择了图片：" + file);
+							            }, function(error) {
+							                console.log(error);
+							            }, {
+							                filter: 'image'
+							            });
+							        }
+							    });
+							});
+                           }else{
+                           	plus.runtime.openFile(task.filename, {}, function (e) {
+                                QxMobile.Alert("无法打开此文件：" + e.emssage);
+                            });
+                           }
+                          
+                        } else {
+                            Alert("下载失败：" + status);
+                            plus.nativeUI.closeWaiting();
+                        }
+                        break;
+                }
+            });
+            dtask.start();
+        }
+</script>

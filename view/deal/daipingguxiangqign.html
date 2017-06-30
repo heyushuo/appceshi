@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			window.onload=function(){
+				//rem布局
+				document.documentElement.style.fontSize = innerWidth/3.2 +"px";
+			    window.addEventListener("resize",function(){
+			        document.documentElement.style.fontSize = innerWidth/3.2  + "px";
+			    },false);
+			};
+			//上传文件
+			$(".files").on("change",function(e){
+				var name = e.currentTarget.files[0].name;
+				$(this).parent().find(".fileName").text( name );
+			})
+			//回填数据
+			var urlStr=document.location.search;
+		    var arr= urlStr.split("?");
+			id=arr[1].split("=")[1];
+			console.log(id);
+			$.ajax({
+				type:"get",
+				url:ctx+"/gongan/app/cooperation/findCooperation.do?id="+id,
+				async:true,
+				datatype:'json',
+				success:function(data){
+					console.log(data)
+					var str="";
+					if(data.status==1){
+						$("#rewIntegral").val(data.Cooperation.rewIntegral);
+						$("#labelText").val(data.Cooperation.labelText);
+						$("#userName").val(data.Cooperation.promoterUserId);
+						$("#userTel").val();
+						$("#connectName").val();
+						$("#connectPhone").val();
+						$("#cooperationDeptId").val();
+						$("#title").val();
+						$("#cooperationType").val();
+						for(var i=0;i<data.queryObjectList.length;i++){
+							str+="<tr><td>"+data.queryObjectList[i].queryObjectType+"</td><td>"+data.queryObjectList[i].queryObjectName+"</td><td>"+data.queryObjectList[i].queryObjectName+"</td><td>"+data.queryObjectList[i].queryObjectName+"</td><td>"+data.queryObjectList[i].queryObjectName+"</td><td>"+data.queryObjectList[i].queryObjectName+"</td><td>"+data.queryObjectList[i].queryObjectName+"</td><td>"+data.queryObjectList[i].queryObjectName+"</td><td>"+data.queryObjectList[i].queryObjectName+"</td></tr>"
+						}
+						$("#addSearchObj").html(str);
+						
+					}else{
+						diaLog("获取数据失败");
+					}
+				},
+				error:function(){
+					diaLog("请求失败");
+				}
+			});
+		</script>
+	</head>
+	<body >
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">发协作</span></div>
+			<form id="Form" method="post">
+				<!-- 发起单位 -->
+				<input type="text" disabled="disabled" hidden="hidden"  name="departmentId" id="departmentId"  /><!--协作发起人所属部门  -->
+				<div class="form">
+					<h1>请求信息</h1>
+					<div class="unit">
+						<label class="text" for="rewIntegral">悬赏积分:</label>
+						<input disabled="disabled" type="text" name="rewIntegral" id="rewIntegral" />
+					</div>
+					<div class="unit">
+						<label class="text" for="labelText">标签:</label>
+						<select disabled="disabled" name="labelText" id="labelText">
+							<option value="1">绑架</option>
+							<option value="2">纵火</option>
+							<option value="3">盗窃</option>
+							<option value="4">逃犯</option>
+						</select>
+					</div>
+					<div class="unit">
+						<label class="text" for="userName">发起人姓名:</label>
+						<input disabled="disabled" type="text" name="userName" id="userName" value="" />
+						<input disabled="disabled" type="text" hidden="hidden" name="promoterUserId" id="promoterUserId" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="userTel">发起人固话:</label>
+						<input disabled="disabled" type="text" name="userTel" id="userTel" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="userPhone">发起人手机:</label>
+						<input disabled="disabled" type="text" name="userPhone" id="userPhone" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="connectName">联系人姓名:</label>
+						<input disabled="disabled" type="text" name="connectName" id="connectName" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="">联系人联系方式:</label>
+						<input disabled="disabled" type="text" name="connectPhone" id="connectPhone" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="cooperationDeptId">协作单位:</label>
+						<input disabled="disabled" type="text" name="cooperationDeptId" id="cooperationDeptId" />
+					</div>
+					<div class="unit">
+						<label class="text" for="title">标题:</label>
+						<input disabled="disabled" type="text" name="title" id="title" value="" />
+					</div>
+				</div>
+				<div class="search-people">
+					<h1>查询对象列表</h1>
+					<ul class="clearfix sp-nav">
+						<li><a href="javascript:;">模板下载</a></li>
+						<li><a href="javascript:;">导入</a></li>
+						<li><a href="addNew.html">增加</a></li>
+						<li><a href="javascript:;">删除</a></li>
+					</ul>
+					<div class="scroll">
+				    	<table id="addSearchObj" class="zonghetongji" border="1" style="border-collapse: collapse;" >
+					    	<tr><td>查询对象类别</td><td>查询对象名称</td><td>对象体征</td><td>具体信息</td><td>备注</td><td>增加时间</td></tr>
+					    	<tr><td>Data</td><td>Data</td><td>Data</td><td>Data</td><td>Data</td><td>Data</td></tr>
+					    	<tr><td>Data1</td><td>Data1</td><td>Data1</td><td>Data1</td><td>Data1</td><td>Data1</td></tr>
+					    </table>
+				    </div>
+				    <div class="send-unit1">
+					<div class="unit1">
+						<label class="text" for="cooperationType">协作类型:</label>
+						<select disabled="disabled" id="cooperationType" name="cooperationType">
+							<option value="1">1</option>
+							<option value="0">0</option>
+						</select>
+					</div>
+					<div class="unit1">
+						<label class="text" for="timeLimit">反馈时限(小时):</label>
+						<select disabled="disabled" id="timeLimit" name="timeLimit">
+							<option value="12">12</option>
+							<option value="2">12</option>
+							<option value="3">12</option>
+						</select>
+					</div>
+					</div>
+					<div class="xiezuo-content">
+						<h1>协作内容</h1>
+						<textarea disabled="disabled" id="cooperationContent" name="cooperationContent" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+					</div>
+					<div class="send-unit1">
+					<div class="unit1">
+						<label class="text" for="requestCause">请求事由:</label>
+						<select disabled="disabled" id="requestCause" name="requestCause">
+							<option value="1">1</option>
+							<option value="1">1</option>
+							<option value="1">1</option>
+						</select>
+					</div>
+					<div class="unit1">
+						<label class="text" for="twoRequestCause">二级请求事件:</label>
+						<select disabled="disabled" id="twoRequestCause" name="twoRequestCause">
+							<option value="1">1</option>
+							<option value="1">1</option>
+							<option value="1">1</option>
+						</select>
+					</div>
+					</div>
+					<h1>上传附件</h1>
+					<div align="left" class="a-upload fujian"><input disabled="disabled" class="files" type="file"/><span class="fileContent" >点击这里上传文件</span><span class="fileName"></span></div>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>我的协作列表</title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/pager.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/pager.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">待发情报小节</span></div>
+		    <h1 style="font-size: 0.16rem; padding: 0.15rem 0px;text-indent: 0.1rem; ">发起情报小节</h1>
+		    <div class="scroll">
+		    	<table class="zonghetongji" border="1" style="border-collapse: collapse;">
+			    	<thead>
+			    		<tr bgcolor='#F5F5F5' style='height: 0.4rem;' ><td>操作</td><td>协作类型</td><td>请求状态</td><td>标题</td><td>请求单位</td><td>请求人</td><td>协作单位</td><td style='width: 20%;'>发起时间</td></tr>
+			    	</thead>
+			    	<tbody id="myTab">
+			    		
+			    	</tbody>
+		    	</table>
+			    <div id="loading" style="text-align: center;">
+			    	
+			    </div>
+			     <div id="pager">
+		    	
+		    	</div>
+		    </div>
+		   
+		</div>
+		<script type="text/javascript">
+		
+		window.onload=function(){
+			//rem布局
+			document.documentElement.style.fontSize = innerWidth/3.2 +"px";
+		    window.addEventListener("resize",function(){
+		        document.documentElement.style.fontSize = innerWidth/3.2  + "px";
+		    },false);
+		};	
+		
+		$(function(){
+			//从localStorage中取出用户信息
+			var userInfo=JSON.parse(localStorage.getItem("user"));
+			var userId=userInfo.id;
+			//公共分页方法
+			function commonPager(data,url,callBack){
+				var pagerBox = document.getElementById('pager');//下标所在的div
+				    $.ajax({
+				      	  type: 'POST',
+				      	  url: url,
+				      	  data: data,
+				      	  dataType:"json",
+				      	  async:false,
+				      	  success: function(data){
+			 	      		var pager = new Pager({
+			 	                index: data.page.pageNum,//当前页号
+			 	                total: data.page.totalPages,//总共有多少页
+			 	                parent: pagerBox,
+			 	                onchange: doChangePage
+			 	            });
+				      	  },
+				      	  error:function(){
+				      		  diaLog("error");
+				      	  }
+				  	 });
+			}
+	
+			
+			
+			var url=ctx+"/gongan/app/cooperation/ajaxPageListCooperation.do";
+	    	//1、页面一加载，查询数据库加载分页列表
+	        var data={"pageNo":1,"promoterUserId":userId};//,"":
+		    commonPager(data,url,doChangePage);
+	        
+	    	//2、单击下面某一页的时候执行的查询
+	        function doChangePage(obj){
+	        	 var tabHtml="";
+	            $.ajax({
+	  	      	  type: 'POST',
+	  	      	  url: url,
+	  	      	  data: {"pageNo":obj.index,"promoterUserId":userId},
+	  	      	  dataType:"json",
+	  	      	  async:true,
+	  	      	  success: function(data){
+	  	      		var list=data.list;
+	  	      		var htmlResult="";
+	  	      		for(var i=0;i<list.length;i++){
+	  	      			var d=	new Date();
+	  	      			var item=list[i];
+	  	      			var cooperationType=item.cooperationType;//协作类型
+	  	      			var status=item.status;//请求状态
+	  	      			var title=item.title;//标题
+	  	      			status=judgeStatus(status);
+	  	      			/*
+	  	      			var departmentId=item.departmentId;//请求单位id
+	  	      			var promoterUserId=item.promoterUserId;//发起人id
+	  	      			var cooperationDeptId=item.cooperationDeptId;//协作单位id
+	  	      			*/
+	  	      			
+	  	      			var departMentName=item.departMentName;//协作发起单位名字
+		  	      		var userName=item.userName;
+		  	      		var cooperationDeptName=item.cooperationDeptName;
+		  	      		
+	  	      			var startTime='';//协作发起时间
+	  	      			var id=item.id;//协作id
+	  	      			//格式化协作发起时间
+	  	      			if (typeof(item.startTime) != "undefined"){
+	  	      				d.setTime(item.startTime);
+	  	      				startTime=d.format('yyyy-MM-dd HH:mm:ss');
+	  	      			}
+	  	      				tabHtml+="<tr style='height: 0.35rem;'>"
+				    			+"<td><a href='javascript:;' onclick='toTail(\""+id+"\")'>申请加分</a><td>"+cooperationType+"</td><td>"+status+"</td><td>"+title+"</td><td>"+departMentName+"</td><td>"+userName+"</td><td>"+cooperationDeptName+"</td><td>"+startTime+"</td>"
+				    			+"</tr>";
+	  	      		}
+	  	      		$("#myTab").html("");
+	  	      		$("#myTab").html(tabHtml);
+	  	      		
+	  	      		
+	  	      	  },
+	  	      	  beforeSend:function(){
+			      	  	$("#myTab").html("<tr><td colspan='3'><img src='../../img/load.gif'></img></td></tr>");
+			      	  },
+			      	  complete:function(){
+				      	$("#loading").html("");
+				      },
+
+	  	      	  error:function(){
+	  	      		  diaLog("error");
+	  	      	  }
+	        	 });
+	        }
+		});
+		
+		
+		//查看协作详情
+		function toTail(id){
+			window.location.href="jiafenContent.html?id="+id;
+		}
+	</script>
+	</body>
+</html>
+

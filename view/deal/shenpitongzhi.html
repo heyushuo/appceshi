@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>待反馈协作</title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/pager.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/pager.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$(function(){
+				//打开页面默认请求情报小节
+					//公共分页方法
+					var url=ctx+"/gongan/app/applyPoint/doExcuteThingPage.do";
+			    	//1、页面一加载，查询数据库加载分页列表
+			    	var userInfo=JSON.parse(localStorage.getItem("user"));
+					var userId=userInfo.id;
+					var index=1;
+			        var data={"pageNo":1,"doExcuteType":index,"userId":userId};
+				    function commonPager(data,url,callBack){
+						var pagerBox = document.getElementById('pager');//下标所在的div
+						    $.ajax({
+						      	  type: 'get',
+						      	  url: url,
+						      	  data: data,
+						      	  dataType:"json",
+						      	  async:false,
+						      	  success: function(data){
+					 	      		var pager = new Pager({
+					 	                index: data.page.pageNum,//当前页号
+					 	                total: data.page.totalPages,//总共有多少页
+					 	                parent: pagerBox,
+					 	                onchange: doChangePage
+					 	            });
+						      	  },
+						      	  error:function(){
+						      		  diaLog("error");
+						      	  }
+						  	 });
+					}
+				    commonPager(data,url,doChangePage);
+				//tab切换
+				$("#tabChange li").click(function(){
+					index=$(this).index()+1;
+					$(this).addClass("active").siblings().removeClass("active");
+					var tabHtml="";  //点击后 清空
+					$("#pager").html("");//点击后 清空
+					data={"pageNo":1,"doExcuteType":index,"userId":userId};//状态是待反馈，签收人是当前用户的
+					commonPager(data,url,doChangePage);
+				})
+				//分页查询
+				function doChangePage(obj){
+			        	var tabHtml="<tr bgcolor='#F5F5F5' style='height: 0.4rem;' >"
+					    			+"<th>操作</th><th>状态</th><th>标题</th><th>发布单位</th><th>发送时间</th>"
+					    			+"</tr>";
+					     var tabHtml1="<tr bgcolor='#F5F5F5' style='height: 0.4rem;' >"
+				    			+"<th style='width: 17%;'>操作</th><th>奖惩分数</th><th>奖惩原因</th><th>申请单位</th><th>申请人</th><th>协作单位</th><th>协作人</th><th>协作编号</th><th>提交时间</th>"
+				    			+"</tr>";
+			            $.ajax({
+			  	      	  type: 'get',
+			  	      	  url: url,
+			  	      	  data: {"pageNo":obj.index,"userId":userId,"doExcuteType":index},//状态是待反馈，签收人是当前用户的
+			  	      	  dataType:"json",
+			  	      	  async:true,
+			  	      	  success: function(data){
+			  	      	  	console.log(data)
+			  	      	  	var list=data.list;
+				  	      	var htmlResult="";
+			  	      	  	if(index==1){
+			  	      	  		for(var i=0;i<list.length;i++){
+				  	      			var d=	new Date();
+				  	      			var item=list[i];
+				  	      			var intelligenceDept=item.intelligenceDept;//情报小结发起单位
+				  	      			var intelligenceTitle=item.intelligenceTitle;//消息标题
+				  	      			var intelligenceStatus=item.intelligenceStatus;//评审状态
+				  	      			var coopIntellType=item.coopIntellType;//协作类型
+				  	      			var id=item.intelligenceId;//情报小节id
+				  	      			var cooperationId=item.cooperationId;//协作id
+				  	      			//评审状态
+				  	      			intelligenceStatus=sectionStatus(intelligenceStatus)
+				  	      			//协作类型
+				  	      			coopIntellType=typeJudgment(coopIntellType);
+				  	      			//格式化协作发起时间
+				  	      			if (typeof(item.intelligenceCreateTime) != "undefined"){
+				  	      				d.setTime(item.intelligenceCreateTime);
+				  	      				intelligenceCreateTime=d.format('yyyy-MM-dd HH:mm:ss');
+				  	      			}     
+				  	      				tabHtml+="<tr style='height: 0.35rem;'>"       
+							    			+"<td><a href='javascript:;' onclick='toTail1(\""+id+"\")'>详情</a></td><td>"+intelligenceStatus+"</td><td>"+intelligenceTitle+"</td><td>"+intelligenceDept+"</td><td>"+intelligenceCreateTime+"</td>"
+							    			+"</tr>";
+				  	      		}
+			  	      	  		$("#myTab").html("");
+				  	      		$("#myTab").html(tabHtml);
+			  	      	  	}else if(index==2){
+			  	      	  		console.log(data)
+			  	      	  		for(var i=0;i<list.length;i++){
+				  	      			var d=	new Date();
+				  	      			var item=list[i];
+				  	      			var appealDeptName=item.appealDeptName;//申诉单位
+				  	      			var appealTitle=item.appealTitle;//申诉标题
+				  	      			var appraialStatus =item.appraialStatus ;//审批状态
+				  	      			var coopAppealType =item.coopAppealType ;//协作类型
+				  	      			var appealCreateDate='';//协作发起时间
+				  	      			var  id=item.appealId;//申诉id
+				  	      			var  flag=item.isExtrascore;//展示时候申请加分了, 0否  1是
+				  	      			var  status=item.cooperationStatus;//协作状态
+				  	      			var cooperationId=item.cooperationId;//协作id
+				  	      			//审批状态
+				  	      			appraialStatus=appealStatus(appraialStatus);
+				  	      			//协作类型
+				  	      			coopAppealType=typeJudgment(coopAppealType);
+				  	      			//格式化协作发起时间
+				  	      			if (typeof(item.appealCreateDate) != "undefined"){
+				  	      				d.setTime(item.appealCreateDate);
+				  	      				appealCreateDate=d.format('yyyy-MM-dd HH:mm:ss');
+				  	      			}
+				  	      			tabHtml+="<tr style='height: 0.35rem;'>"
+				  	      			if(status==10&&flag==0){
+							    		tabHtml+="<td><a href='javascript:;' onclick='toTail2(\""+id+"\")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='doSure(\""+cooperationId+"\")'>完成</a><a style='margin-left:0.05rem' href='javascript:;' onclick='addScores(\""+id+"\")'>加分</a></td><td>"+appraialStatus+"</td><td>"+appealTitle+"</td><td>"+appealDeptName+"</td><td>"+appealCreateDate+"</td>";
+				  	      			}else if(status==10&&flag==1){
+							    		tabHtml+="<td><a href='javascript:;' onclick='toTail2(\""+id+"\")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='doSure(\""+cooperationId+"\")'>完成</a></td><td>"+appraialStatus+"</td><td>"+appealTitle+"</td><td>"+appealDeptName+"</td><td>"+appealCreateDate+"</td>";
+				  	      			}else{
+				  	      				tabHtml+="<td><a href='javascript:;' onclick='toTail2(\""+id+"\")'>详情</a></td><td>"+appraialStatus+"</td><td>"+appealTitle+"</td><td>"+appealDeptName+"</td><td>"+appealCreateDate+"</td>";
+				  	      			}
+				  	      			tabHtml+="</tr>";
+				  	      		}
+			  	      	  		$("#myTab").html("");
+				  	      		$("#myTab").html(tabHtml);
+			  	      	  	}else{
+			  	      		for(var i=0;i<list.length;i++){
+			  	      			var d=	new Date();
+			  	      			var item=list[i];
+			  	      			var score=item.score;//奖惩分数
+			  	      			var applyReason=item.applyReason;//奖惩原因
+			  	      			var applyDepartmentName=item.applyDepartmentName;//申请单位名称
+			  	      			var applyUserName=item.applyUserName;//申请人名称
+			  	      			var coopDepartmentName=item.coopDepartmentName;//协作单位
+			  	      			var coopUserName=item.coopUserName;//协作人
+			  	      			var createDate='';//协作提交时间
+			  	      			var idNum=item.cooid;//协作id
+			  	      			var id=item.applyPointId;//申请加分id
+			  	      			var flag=item.isAppeal;//是否申诉过   0为申诉 1申诉
+			  	      			var status=item.cooperationStatus;//协作状态
+			  	      			//格式化协作发起时间
+			  	      			if (typeof(item.createDate) != "undefined"){
+			  	      				d.setTime(item.createDate);
+			  	      				createDate=d.format('yyyy-MM-dd HH:mm:ss');
+			  	      			}
+			  	      			
+				  	      		tabHtml1+="<tr style='height: 0.35rem;'>"
+				  	      		if(status==8&&flag==0){
+				  	      			tabHtml1+="<td><a href='javascript:;' onclick='toTail3(\""+id+"\")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='doSure(\""+idNum+"\")'>完成</a><a style='margin-left:0.05rem' href='javascript:;' onclick='appeal(\""+idNum+"\")'>申诉</a></td><td>"+score+"</td><td style='width:10%;'>"+applyReason+"</td><td>"+applyDepartmentName+"</td><td>"+applyUserName+"</td><td>"+coopDepartmentName+"</td><td>"+coopUserName+"</td><td>"+idNum+"</td><td>"+createDate+"</td>";
+				  	      		}else if(status==8&&flag==1){
+				  	      			tabHtml1+="<td><a href='javascript:;' onclick='toTail3(\""+id+"\")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='doSure(\""+idNum+"\")'>完成</a></td><td>"+score+"</td><td style='width:10%;'>"+applyReason+"</td><td>"+applyDepartmentName+"</td><td>"+applyUserName+"</td><td>"+coopDepartmentName+"</td><td>"+coopUserName+"</td><td>"+idNum+"</td><td>"+createDate+"</td>";
+				  	      		}else{
+				  	      			tabHtml1+="<td><a href='javascript:;' onclick='toTail3(\""+id+"\")'>详情</a></td><td>"+score+"</td><td style='width:10%;'>"+applyReason+"</td><td>"+applyDepartmentName+"</td><td>"+applyUserName+"</td><td>"+coopDepartmentName+"</td><td>"+coopUserName+"</td><td>"+idNum+"</td><td>"+createDate+"</td>";
+				  	      		}
+						    		tabHtml1+="</tr>"; 
+			  	      		}
+			  	      	  		$("#myTab").html("");
+				  	      		$("#myTab").html(tabHtml1);
+			  	      	  	}
+			  	      	  		
+				  	      		
+				  	      		
+			  	      	  },
+			  	      	  beforeSend:function(){
+				      	  	$("#myTab").html("<img style='margin-left:1.5rem;' src='../../img/load.gif'></img>");
+				      	  },
+				      	  complete:function(){
+					      	$("#loading").html("");
+					      },
+			  	      	  error:function(){
+			  	      		  diaLog("error");
+			  	      	  }
+			        	 });
+		        	}
+			});
+			//审批详情
+			function toTail1(id){
+				window.location.href="qingbaoxiaojiexiangqing.html?id="+id;
+			}
+			//申诉详情
+			function toTail2(id){
+				window.location.href="shensuxiangqing.html?id="+id;
+			}
+			//评审详情
+			function toTail3(id){
+				window.location.href="jiafenxiangqing.html?id="+id;
+			}
+			//确认流程结束
+			function doSure(id){
+				$.ajax({
+					type:"post",
+					url:"/gongan/app/intelligence/updateCooperationStatus.do",
+					async:true,
+					dataType:"json",
+					data:{"cooperationId":id},
+					success:function(data){
+						if(data.status==1){
+							window.location.reload();
+						}
+					},
+					error:function(){
+						diaLog("error");
+					}
+				});
+			}
+			//申请加分
+			function addScores(id){
+				window.location.href="jiafenContent.html?id="+id;
+			}
+			//申诉
+			function appeal(id){
+				window.location.href="shensuContent.html?cooperationId="+id;
+			}
+		</script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="../../my.html" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">审批通知</span></div>
+		   	<ul class="tabChange clearfix" id="tabChange">
+		   		<li class="active">情报小节</li>
+		   		<li>申诉</li>
+		   		<li>申请加分</li>
+		   	</ul>
+		    <div class="scroll">
+		    	<table id="myTab" class="zonghetongji" border="1" style="border-collapse: collapse;">
+			    	
+			    </table>
+			    <div id="loading" style="text-align: center;">
+			    	
+			    </div>
+			    <div id="pager">
+			    	
+			    </div>
+		    </div>
+		</div>
+	</body>
+</html>
+

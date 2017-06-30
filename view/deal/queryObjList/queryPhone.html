@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../css/faxiezuo.css"/>
+		<script src="../../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/layer2.1/layer.js"></script>
+    	<script src="../../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+			$(function(){
+				var Request=new UrlSearch(); 
+			    $("#queryObjTypeId").val(Request.id);//设置隐藏域的id
+				 //提交按钮
+				 $("#btnSure").click(function(){
+				 	//校验                     
+			 	//1.手机号码的验证
+			 	var phoneNum=$("#phoneNum").val();
+			   	var phoneReg= /^1(3|4|5|7|8)\d{9}$/;
+			   	if (typeof(phoneNum) == "undefined"||jQuery.trim(phoneNum) == ''){
+				   diaLog('请填写手机号');
+				   return false;
+			     }
+		   		 if (!phoneReg.test($.trim(phoneNum))){
+				   diaLog('请填写正确手机号');
+				   return false;
+			     }
+		   		 //2.串号的验证
+			   	 //--------------------校验结束
+				   	 $("#btnSure").attr("disabled",true);
+					 var form = $("#form");  
+						var options  = {    
+							url:ctx+'/gongan/app/queryObject/doAddPhone.do',
+							type:'post', 
+							dataType:'json',
+							success:function(data) {
+								$("#btnSure").removeAttr("disabled");
+								if(data.status=='1'){
+									//  <tr id="first"><td>操作</td><td>查询对象类别</td><td>查询对象名称</td><td>对象体征</td><td>具体信息</td><td>备注</td><td>增加时间</td></tr>
+									//给父级的父级添加数据
+									var d=	new Date();
+									var queryInfoCreateDate;
+									if (typeof(data.queryInfoCreateDate) != "undefined"){
+				  	      				d.setTime(data.queryInfoCreateDate);
+				  	      				queryInfoCreateDate=d.format('yyyy-MM-dd HH:mm:ss');
+				  	      			}
+									$("#first",parent.parent.document.body).after("<tr><td><input type=\"hidden\" name=\"queryInfoId"+new Date().getTime()+"hylc:phone\" value=\""+data.queryInfoId+"\" /><a href=\"javascript:;\" onclick=\"getTails('phone',"+data.objectId+")\">查看&nbsp;</a><a href=\"javascript:;\" onclick=\"doDelQueryObject("+data.queryInfoId+",'phone',"+data.objectId+",this)\">删除</a></td><td>"+data.objectType+"</td><td>"+data.objectName+"</td><td>"+data.remarks+"</td><td>"+queryInfoCreateDate+"</td></tr>");
+									parent.closeWindow();//关闭父窗口
+									 closeWindow();
+									
+								}else{
+									diaLog('添加失败');
+								}
+								
+							},
+							error:function(){
+								$("#btnSure").removeAttr("disabled");
+								diaLog('添加失败');
+							}
+						};    
+						form.ajaxSubmit(options);
+				 });
+			    
+			    //关闭弹窗
+			    function closeLayer(){
+			    	var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+				    parent.layer.close(index);
+			    }
+				$("#btnClose").click(function(){
+					closeLayer();
+				});
+				$("#head").click(function(){
+					closeLayer();
+				})
+			});
+		</script>
+	</head>
+	<body>
+	<form id="form">
+	<input type="hidden" name="queryObjTypeId" id="queryObjTypeId"/>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:;" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">查询对象信息增加</span></div>
+			<div class="form">
+				<h1 style="background: #6786ED;">查询对象信息增加</h1>
+				<div class="unit">
+					<label class="text" for="">手机号码</label>
+					<input type="text" class="pull-right" name="phoneNum" id="phoneNum" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">串号</label>
+					<input type="text" class="pull-right" name="serialNumber" id="serialNumber" />
+				</div>
+				<div class="btnbox">
+					<input id="btnSure" class="btn btn-width1" type="button" value="确定" />
+					<input id="btnClose" class="btn btn-width1" type="button" value="返回" />
+				</div>
+			</div>
+		</div>
+ </form>
+	</body>
+</html>

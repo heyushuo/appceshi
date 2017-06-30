@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>我的协作列表</title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/pager.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/pager.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="../../my.html" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">我发起的协作</span></div>
+		    <h1 style="font-size: 0.16rem; padding: 0.15rem 0px;text-indent: 0.1rem; ">我发起的协作</h1>
+		    <div class="scroll">
+		    	<table class="zonghetongji" border="1" style="border-collapse: collapse;">
+			    	<thead>
+			    		<tr bgcolor='#F5F5F5' style='height: 0.4rem;' ><td style='width: 15%;'>操作</td><td>请求状态</td><td>标题</td><td>请求人</td><td>请求单位</td><td style='width: 20%;'>发起时间</td></tr>
+			    	</thead>
+			    	<tbody id="myTab">
+			    		
+			    	</tbody>
+		    	</table>
+			    <div id="loading" style="text-align: center;">
+			    	
+			    </div>
+
+			     <div id="pager">
+		    	
+		    	</div>
+		    </div>
+		</div>
+		<script type="text/javascript">
+		$(function(){
+			//判断用户是否登录，没有登录跳转到登录页面
+			if(!validateIsLogin()){
+				window.location.href="../login.html";
+			}else{
+				//从localStorage中取出用户信息
+				var userInfo=JSON.parse(localStorage.getItem("user"));
+				var userId=userInfo.id;
+				//公共分页方法
+				function commonPager(data,url,callBack){
+					var pagerBox = document.getElementById('pager');//下标所在的div
+					    $.ajax({
+					      	  type: 'POST',
+					      	  url: url,
+					      	  data: data,
+					      	  dataType:"json",
+					      	  async:false,
+					      	  success: function(data){
+				 	      		var pager = new Pager({
+				 	                index: data.page.pageNum,//当前页号
+				 	                total: data.page.totalPages,//总共有多少页
+				 	                parent: pagerBox,
+				 	                onchange: doChangePage
+				 	            });
+					      	  },
+					      	  error:function(){
+					      		  diaLog("error");
+					      	  }
+					  	 });
+				}
+				var url=ctx+"/gongan/app/cooperation/ajaxPageListCooperation.do";
+		    	//1、页面一加载，查询数据库加载分页列表
+		        var data={"pageNo":1,"promoterUserId":userId};
+			    commonPager(data,url,doChangePage);
+		    	//2、单击下面某一页的时候执行的查询
+		        function doChangePage(obj){
+		        	 var tabHtml="";
+		            $.ajax({
+		  	      	  type: 'POST',
+		  	      	  url: url,
+		  	      	  data: {"pageNo":obj.index,"promoterUserId":userId},
+		  	      	  dataType:"json",
+		  	      	  async:true,
+		  	      	  success: function(data){
+		  	      		 if(data.status=="1"){
+		  	      			var list=data.list;
+			  	      		var htmlResult="";
+			  	      		for(var i=0;i<list.length;i++){
+			  	      			var d=	new Date();
+			  	      			var item=list[i];
+			  	      			var cooperationType=item.cooperationType;//协作类型
+			  	      			var status=item.status;//请求状态
+			  	      			var title=item.title;//标题
+			  	      			//判断查询类型
+			  	      			cooperationType=typeJudgment(cooperationType);
+			  	      			
+			  	      			var evaluationTime1=item.evaluationTime//评估日期
+			  	      			
+			  	      			/*
+			  	      			var departmentId=item.departmentId;//请求单位id
+			  	      			var promoterUserId=item.promoterUserId;//发起人id
+			  	      			var cooperationDeptId=item.cooperationDeptId;//协作单位id
+			  	      			*/
+			  	      			
+			  	      			var departMentName=item.departMentName;//协作发起单位名字
+				  	      		var userName=item.userName;
+				  	      		var cooperationDeptName=item.cooperationDeptName;
+				  	      		var cooperationDeptId=item.cooperationDeptId;//协作单位id
+			  	      			if(cooperationDeptId==-1){
+			  	      				cooperationDeptName="公安";
+			  	      			}
+			  	      			var sendStatus=item.sendStatus;//是否发过情报小节
+			  	      			var startTime='';//协作发起时间
+			  	      			var id=item.id;//协作id
+			  	      			var number=item.number;
+			  	      			//格式化协作发起时间
+			  	      			if (typeof(item.startTime) != "undefined"){
+			  	      				d.setTime(item.startTime);
+			  	      				startTime=d.format('yyyy-MM-dd HH:mm:ss');
+			  	      			}
+			  	      			tabHtml+="<tr  style='height: 0.35rem;'>";
+			  	      			if(cooperationDeptId==-1){
+				  	      			if(status == 1){
+				  	      				status=judgeStatus(status);
+										tabHtml +="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='modify(\""+id+"\")'>修改</a><a style='margin-left:0.05rem' href='javascript:;' onclick='sendCooperation("+id+","+cooperationDeptId+")'>发送</a></td>";
+									}else if(status == 12&&sendStatus==1){
+										status=judgeStatus(status);
+										tabHtml +="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a></td>"
+									}else if(status == 3||status==2){
+										status=judgeStatus(status);
+									    tabHtml +="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='closeRadio("+id+")'>关闭广播</a></td>"												
+									}else{
+										status=judgeStatus(status);
+										tabHtml +="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a></td>";
+									}
+			  	      				
+			  	      			}else{
+				  	      			if(status == 1){
+				  	      				status=judgeStatus(status);
+										tabHtml +="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='toModify(\""+id+"\")'>修改</a><a style='margin-left:0.05rem' href='javascript:;' onclick='sendCooperation("+id+","+cooperationDeptId+")'>发送</a><a style='margin-left:0.05rem' href='javascript:;' onclick='deleteCooper("+id+","+cooperationDeptId+")'>作废</a></td>";
+									}else if(status >= 5 && item.sendStatus ==1 && item.roleId != 1){
+										status=judgeStatus(status);
+										
+										if(typeof(evaluationTime1) != 'undefined'){
+											tabHtml +="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='applySection("+id+",\""+number+"\")'>情报小结</a></td>"
+										}else{
+											tabHtml +="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a></td>";
+										}
+									}else if(status == 2 || status == 3){
+										status=judgeStatus(status);
+									    tabHtml +="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a></td>"												
+									}else{
+										status=judgeStatus(status);
+										tabHtml +="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a></td>";
+									}
+			  	      				
+			  	      			}
+			  	      			tabHtml+="<td>"+status+"</td><td>"+title+"</td><td>"+userName+"</td><td>"+departMentName+"</td><td>"+startTime+"</td></tr>";
+			  	      		}
+			  	      		$("#myTab").html("");
+			  	      		$("#myTab").html(tabHtml);
+		  	      		 }else{
+		  	      			 diaLog("加载数据失败");
+		  	      		 }
+		  	      		
+		  	      	  },
+		  	      	  beforeSend:function(){
+			      	  	$("#myTab").html("<tr><td colspan='5'><img src='../../img/load.gif'></img></td></tr>");
+			      	  },
+			      	  complete:function(){
+				      	$("#loading").html("");
+				      },
+		  	      	  error:function(){
+		  	      		  diaLog("error");
+		  	      	  }
+		        	 });
+		        }
+			}
+			
+		});
+		
+		//查看协作详情
+		function toTail(id){
+			window.location.href="xiezuoxiangqing.html?id="+id;
+		}
+		//广播修改协作
+		function modify(id){
+			window.location.href="xiezuoguangboxiugai.html?id="+id;
+		}
+		//协作修改
+		function toModify(id){
+			window.location.href="xiezuoxiugai.html?id="+id;
+		}
+		//发送
+		var preventSubmit=true;
+		function sendCooperation(id,cooperationDeptId){
+				//从localStorage中取出用户信息
+				var id=id;
+				var cooperationDeptId=cooperationDeptId;
+				var userInfo=JSON.parse(localStorage.getItem("user"));
+				var isLiaisonMan=userInfo.isLiaisonMan;//是否是联络员
+				var myScoreCount = userInfo.isLiaisonMan;//个人积分
+				if (isLiaisonMan == 0 && myScoreCount < 100) {
+					diaLog("积分不足100");
+					return false;
+				} else {
+					if(preventSubmit){
+						preventSubmit=false;
+						$.ajax({
+								type : 'POST',
+								url : ctx+'/gongan/app/cooperation/sendCooperation.do',
+								data : {
+									'coopId' : id,
+									'method' : 'fasong',
+									'cooperDepatmentId' : cooperationDeptId
+								},
+								dataType : 'json',
+								success : function(data) {
+									console.log(data)
+									if (data.status == 1) {
+										if (cooperationDeptId == -1) {
+											diaLog("广播发送成功");
+										} else {
+											diaLog("协作发送成功");
+										}
+										window.location.reload();
+									}else if(data.status == 2){
+										   diaLog("有待评估，不能发协作");
+									}else if(data.status ==4||data.status == 5){
+										 diaLog("积分不够");
+									}else {
+										diaLog("协作发送失败");
+									}
+								}
+							});
+					}
+				     	
+				}
+		}
+		//申请情报小节
+		function applySection(id,number){
+			window.location.href="qingbaoxiaojieContent.html?id="+id+"&number="+number;
+		}
+		//督办
+		function supervise(){
+			diaLog("督办");
+		}
+		//关闭广播
+		function closeRadio(id){
+			window.location.href="guanbiguangbo.html?id="+id;
+		}
+		//作废按钮
+		function deleteCooper(id,cooperDepatmentId){
+				$.ajax({
+					type : 'POST',
+					url : ctx+'/gongan/app/admin/cooperation/deleteCoopById.do',
+					data : {
+						'id' : id,
+						'cooperDepatmentId' : cooperDepatmentId
+					},
+					dataType : 'json',
+					success : function(data) {
+						window.location.reload();
+					}
+				});
+			}
+	</script>
+	</body>
+</html>
+
+

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../css/faxiezuo.css"/>
+		<script src="../../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/layer2.1/layer.js"></script>
+    	<script src="../../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$(function(){
+				var Request=new UrlSearch(); 
+				//加载页面详情内容
+				$.ajax({
+		  	      	  type: 'POST',
+		  	      	  url: ctx+"/gongan/app/queryObject/getIntelligence.do",
+		  	      	  data: {"id":Request.id},
+		  	      	  dataType:"json",
+		  	      	  async:false,
+		  	      	  success: function(data){
+		  	      		  if(data.status=="1"){
+			  	      			var d=	new Date();
+								var endTime;
+								if (typeof(data.endTime) != "undefined"){
+			  	      				d.setTime(data.endTime);
+			  	      				endTime=d.format('yyyy-MM-dd HH:mm:ss');
+			  	      			}
+								
+		  	      			    $("#type").val(data.type);
+			  	      		    $("#reliable").val(data.reliable);
+				  	      	    $("#mayThing").val(data.mayThing);
+				  	      	    $("#possibility").val(data.possibility);
+				  	      		$("#involve").val(data.involve);
+				  	      		$("#cueRange").val(data.cueRange);
+				  	    		$("#influenceProperty").val(data.influenceProperty);
+				  	    		$("#emergencyLevel").val(data.emergencyLevel);
+				  	    		$("#treatmentStatus").val(data.treatmentStatus);
+				  	    		$("#clueResourt").val(data.clueResourt);
+				  	    		$("#clueSource").val(data.clueSource);
+				  	    		$("#endTime").val(endTime);
+		  	      	
+		  	      		  }else{
+		  	      			diaLog('数据加载异常');
+		  	      		  }
+		  	      	  },
+		  	      	  error:function(){
+		  	      		diaLog('数据加载异常');
+		  	      	  }
+		        	 });
+				//关闭窗口
+				function closeWindow(){
+					var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			         parent.layer.close(index);
+				}
+				$("#btnClose").click(function(){
+					closeWindow();
+				});
+			    $("#head").click(function(){
+			    	closeWindow();
+			    })
+				
+			});
+</script>
+	</head>
+	<body>
+	<form id="form">
+		
+		<input type="hidden" name="queryObjTypeId" id="queryObjTypeId"/>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:;" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">查询对象信息增加</span></div>
+			<div class="form">
+				<h1 style="background: #6786ED;">查询对象信息增加</h1>
+				<div class="unit">
+					<label class="text" for="">线索类型</label>
+					<input type="text" class="pull-right" name="type" id="type" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索可靠性</label>
+					<input type="text" class="pull-right" name="reliable" id="reliable" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">可能导致的事</label>
+					<input type="text" class="pull-right" name="mayThing" id="mayThing"  />
+				</div>
+				<div class="unit">
+					<label class="text" for="">发生的可能性(%)</label>
+					<input type="text" class="pull-right" name="possibility" id="possibility"  />
+				</div>
+				<div class="unit">
+					<label class="text" for="">涉及的人员或群体</label>
+					<input type="text" class="pull-right" name="involve" id="involve" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索范围</label>
+					<input type="text" class="pull-right" name="cueRange" id="cueRange" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">影响性质</label>
+					<input type="text" class="pull-right" name="influenceProperty" id="influenceProperty" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">紧急等级(%)</label>
+					<select name="emergencyLevel" id="emergencyLevel">
+						<option value="1" >常规</option>
+					</select>
+				</div>
+				<div class="unit">
+					<label class="text" for="">处理状态</label>
+					<input type="text" class="pull-right" name="treatmentStatus" id="treatmentStatus" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索结果</label>
+					<input type="text" class="pull-right" name="clueResourt" id="clueResourt" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索来源</label>
+					<input type="text" class="pull-right" name="clueSource" id="clueSource" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">线索有效期</label>
+					<input type="text" class="pull-right" name="endTime" id="endTime" />
+				</div>
+				<!-- -----------------------------    -->
+				<div class="btnbox">
+					<input id="btnSure" class="btn btn-width1" type="button" value="确定" />
+					<input id="btnClose" class="btn btn-width1" type="button" value="关闭" />
+				</div>
+			</div>
+		</div>
+	</form>
+	</body>
+</html>

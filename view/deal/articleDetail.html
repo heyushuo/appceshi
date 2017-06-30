@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>文章内容</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			.box1{
+				width: 95%;
+				margin: 0 auto;
+				overflow-x: hidden;
+				
+			}
+			.content{
+				width: 100%;
+			}
+			.content .header{
+				text-align: center;
+				font-size: 0.16rem;
+				padding: 0.1rem 0 0.05rem 0;
+			}
+			.small-title{
+				padding: 0.05rem 0px;
+				font-size: 12px;
+				width: 100%;
+			}
+			.small-title .left{
+				width: 38%;
+			}
+			.small-title .right{
+				width: 25%;
+			}
+			.small-title .main{
+				float: left;
+				width: 37%;
+				/*margin-left: 0.1rem;*/
+			}
+			.contentM p{
+				text-indent: 2em;
+			}
+			.small-title span{
+				vertical-align: top;
+			}
+			.small-title .a1{
+				max-width: ;
+				display: inline-block;
+				width: 65%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.small-title .a2{
+				max-width: ;
+				display: inline-block;
+				width: 63%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.small-title .a3{
+				max-width: ;
+				display: inline-block;
+				width: 48%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			/*.small-title span{
+				display: inline-block;
+			}
+			.small-title .resourse{
+				width: 35%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.small-title .publish{
+				width: 30%;
+				text-align: center;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.small-title .view{
+				width: 35%;
+				text-align: right;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}*/
+		</style>
+	</head>
+	<body>
+		<div class="head"><a id="head" href="../../index.html" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left"></span></div>
+		<div class="box1">
+    		<div class="content">
+				<h1 class="header" id="header"></h1>
+				<div class="small-title clearfix">
+						<div class="pull-left left">
+							<span>来源于:</span><span class="a1"></span>
+						</div>
+						<div class="main">
+							<span>发表于:</span><span class="a2"></span>
+						</div>
+						<div class="pull-left right">
+							<span>浏览量:</span><span class="a3"></span>
+						</div>
+					<!--<span class="resourse">来源:<span id="resourse"></span></span>  <span class="publish"><span>发表于:</span><span id="time">2017-1-6</span></span> <span class="view">浏览量:<span></span></span>-->
+				</div>
+				<div class="contentM" id="contentM">
+					<p></p>
+				</div>
+			</div>
+			
+			
+			<div class="comment clearfix">
+			<!--<h3><span>发表评论</span><span id="btnclick" style="font-size:12px;cursor:pointer;" class="pull-right">共有<span id="totalPage"></span>条评论</span></h3>
+			<div class="comment-top">
+				<div class="content-t" >
+					<textarea id="content" name="" rows="" cols="" placeholder="请写下您的评论..."></textarea>
+				</div>
+				<div class="content-b">
+					<div class="content-btn" id="comment">
+						评论
+					</div>
+				</div>
+			</div>
+			<h3 class="comment-title">最新评论:</h3>
+			<div class="comment-bottom">
+				<ul class="comment-list" id="comment-list">
+				</ul>
+				<div class="loadMore" id="loadMore" style="padding: 0.1rem 0;text-align: center;cursor:pointer;">点击加载更多>></div>
+			</div>
+		</div>-->
+	  </div>
+	</body>
+</html>
+<script type="text/javascript">
+	$(function(){
+		var request=new UrlSearch();
+		var id=request.id;
+		$.ajax({
+			type:"get",
+			url:ctx+"/gongan/app/contentpublish/toView.do",
+			data:{"id":id},
+			dataType:"json",
+			success:function(data){
+				console.log(data)
+				var d=new Date();
+				if(typeof(data.contentPublish)!="undefined"){
+					var item=data.contentPublish;
+					d.setTime(item.releaseDate);
+      				releaseDate=d.format('yyyy-MM-dd');
+					$("#header").text(item.messHeader);
+					$("#contentM p").html(item.content);
+					$(".a3").text(item.readNum);
+					$(".a2").text(releaseDate);
+					var resourse="";
+					if(typeof(item.departmentName)=="undefined"){
+						resourse="公安部"
+					}else{
+						resourse=item.departmentName;
+					}
+					$(".a1").text(resourse);
+				}
+			},
+			error:function(){
+				diaLog("error")
+			}
+		});
+	})
+</script>

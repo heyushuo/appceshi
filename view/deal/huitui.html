@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">回退</span></div>
+			<div class="form">
+				<h1 style="background: #6786ED;color:#fff;">回退原因</h1>
+				<div class="xiezuo-content">
+						<textarea id="returnReason" name="returnReason" rows="" cols=""  ></textarea>
+					</div>
+			<div class="btnbox">
+				<input id="tijiao" class="btn btn-width2" type="button" value="确定" />
+			</div>
+		</div>
+	</body>
+</html>
+<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/layer2.1/layer.js"></script>
+
+<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	var request=new UrlSearch();
+	var flag=request.flag;
+	var id=request.id;
+	$('#tijiao').click(function(){
+		   var returnReason = $('#returnReason').val();
+		   if($.trim(returnReason)  ==  ''){
+			   diaLog("请填写回退原因");
+			   return false;
+		   }
+		  $.ajax({
+		  	  type: 'get',
+		  	  url: ctx+"/gongan/app/cooperation/doOperationCoo.do",
+		  	  data:{"flag":flag,"cooperationId":id,"returnReason":returnReason},
+		  	  dataType:"json",
+		  	  async:true,
+		  	  success:function(data){
+		      		if(data.status==0){
+		      			diaLog("操作失败");
+		      		}else{
+		      			window.location.href="daiqianshou.html";
+		      		}
+		  	    },
+		  	  error: function(){
+		  	    		diaLog("error");
+		  	    }
+		 	});
+	});
+   
+</script>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="iconFont/iconfont.css"/>
+		<script src="js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="css/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/layer2.1/layer.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/base.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			body{
+				font-size: 0.14rem;
+			}
+			.box{
+				margin-top: 0.3rem;
+			}
+			.box1{
+				height: 2rem;
+				margin-top: 0.4rem;
+			}
+			.box1 img{
+				width: 100%;
+				height: 100%;
+			}
+			*{margin: 0;padding: 0;}
+			input[type="button"]{
+				width: 90%;
+				padding: 10px 0px;
+				display: block;
+				-webkit-border-radius: 0.05rem;
+				-moz-border-radius: 0.05rem;
+				border-radius: 0.05rem;
+				border: none;
+				background: #007AFF;
+				color: #fff;
+				font-weight: bold;
+				font-size: 0.14rem;
+				margin:5px auto;
+			}
+			.info-warn{
+				text-align: center;
+				padding: 15px 0 0 0;
+			}
+			.info-warn p{
+				padding: 5px 0;
+				font-weight: bold;
+			}
+			.info-warn p:nth-child(1){
+				color: #676767;
+			}
+			.info-warn p:nth-child(2){
+				color: #A4A4A4;
+			}
+		</style>
+	</head>
+	<body bgcolor="#EEEEEE">
+		<div class="head"><a id="head" href="javascript:back();" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">确认登录</span></div>
+		<div class="box1">
+			<img src="img/confirmLogin_02.jpg"/>
+		</div>
+		<div class="info-warn">
+			<p>公安系统登录确认</p>
+			<p>请不要扫来源不明的二维码</p>
+		</div>
+		<div class="box">
+			<input type="button" name="" id="btnSure" value="确认登录" />
+			<input type="button" name="" id="cancel" value="取消" />
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	$("#cancel").click(function(){
+		back();
+	});
+	mui.plusReady(function(){
+		var self = plus.webview.currentWebview();
+		var sessionId=self.sessionId;
+		var userInfo=JSON.parse(localStorage.getItem("user"));
+		var userId=userInfo.id;//发起人id
+		var Data={"sessionId":sessionId,"userId":userId};
+		$("#btnSure").click(function(){
+			$.ajax({
+				type:"get",
+				url:ctx+"/gongan/app/user/doCodeLogin.do",
+				async:true,
+				datatype:"json",
+				data:Data,
+				success:function(data){
+					var status=JSON.parse(data).status;
+					if(status==1){
+						diaLog("登录成功");
+						back();
+					}else if(status==2){
+						diaLog("二维码已失效");
+					}
+				},
+				error:function(){
+					diaLog("error");
+				}
+			});
+		})
+	})
+	
+</script>

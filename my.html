@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="css/my.css"/>
+		<script src="js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/layer2.1/layer.js"></script>
+		<script src="js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script type="javascript" src="js/sockjs-0.3.min.js"></script>
+		<script src="css/common.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body bgcolor="#F5F5F5" >
+		<div class="box">
+			<!--<div class="qiandao">
+				
+			</div>-->
+			<div class="pic-head">
+				<div class="my-zhezhao clearfix ">
+					<div class="pull-left" onclick="clicked('barcode_scan.html',true,true);" id="scanCode">扫一扫</div>
+					<div class="pull-right" id="logout"><i class="iconfont icon-zhuxiao"></i><span>注销</span></div>
+				</div>
+				<div class="login" style="position: relative;"><a href="javascript:;"><img style="width: 0.6rem;height: 0.6rem;border-radius:0.3rem;position: absolute;left: 0;top: 0;" id="headPic" src=""/></a></div>
+				<div class="randInfo"><span>积分值:<span id="userScore"></span>&nbsp;|&nbsp;</span><span id="geren" >个人排名:<span id="userRanking"></span>&nbsp;|&nbsp;</span><span id="danwei" >单位排名:<span id="userDeptRanking"></span></span></div>
+			</div>
+			<div class="my-content">
+				<div class="tool">
+					<span>协作</span>
+				</div>
+				<ul id="chuli" class="clearfix chuli">
+					<li>
+						<a  href="view/deal/myXieZuoList.html">
+							<div class="iconfont icon-my-cooperation" style="color:#5276e5;"></div>
+							<p style="font-size:0.1rem;color:black;">我的协作</p>
+						</a>
+					</li>
+					<li>
+						<a href="view/deal/participateList.html">
+							<div class="iconfont icon-guangbo" style="color:green;"></div>
+							<p style="font-size:0.1rem;color:black;">参与的协作</p>
+						</a>
+					</li>
+					<li>
+						<a href="view/deal/faxiezuo.html">
+							<div class="iconfont icon-renren"  style="color:#FB9F23;"></div>
+							<p style="font-size:0.1rem;color:black;">发协作</p>
+						</a>
+					</li>
+					<li>
+						<a href="view/deal/faguangbo.html">
+							<div class="iconfont icon-guangbo"  style="color:#DD271A;"></div>
+							<p style="font-size:0.1rem;color:black;">发广播</p>
+						</a>
+					</li>
+					<li class="daiqianshou">
+						<a href="view/deal/daiqianshou.html">
+							<div class="iconfont icon-fankui" style="color:#8F30EE;"></div>
+							<p style="font-size:0.1rem;color:black;">待签收</p>
+							<span class="warn1 warn" id="toBeSigned"></span>
+						</a>
+					</li>
+					<li class="daiqianshou">
+						<a href="view/deal/daifankui.html">
+							<div class="iconfont icon-fankui1" style="color:#FCB434;"></div>
+							<p style="font-size:0.1rem;color:black;">待反馈</p>
+							<span class="warn2 warn" id="toFeedback"></span>
+						</a>
+					</li>
+					<li class="daiqianshou">
+						<a href="view/deal/daipinggu.html">
+							<div class="iconfont icon-pinggu" style="color:#F92F73;"></div>
+							<p style="font-size:0.1rem;color:black;">待评估</p>
+							<span class="warn3 warn" id="toEvaluation"></span>
+						</a>
+					</li>
+					<li class="daiqianshou">
+						<a href="view/deal/daishenpi.html">
+							<div class="iconfont icon-guangbo" style="color:#279EF7;"></div>
+							<p style="font-size:0.1rem;color:black;">待审批</p>
+							<span class="warn4 warn" id=""></span>
+						</a>
+					</li>
+					<li>
+						<a href="view/deal/dubanxinxi.html">
+							<div class="iconfont icon-duchaduban" style="color:#279EF7;"></div>
+							<p style="font-size:0.1rem;color:black;">督办信息</p>
+						</a>
+					</li>
+					<li class="daiqianshou">
+						<a href="view/deal/shenpitongzhi.html">
+							<div class="iconfont icon-guangbo" style="color:#C40000;"></div>
+							<p style="font-size:0.1rem;color:black;">审批通知</p>
+							<span class="warn6 warn" id=""></span>
+						</a>
+					</li>
+					<li class="daiqianshou" id="signed">
+						<a href="javascript:;">
+							<div class="iconfont icon-guangbo" style="color:#C40000;"></div>
+							<p  style="font-size:0.1rem;color:black;">签到</p>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="footer">
+				<ul class="clearfix">
+					<li>
+						<a href="index.html">
+							<div class="iconfont icon-shouye-shouye"></div>
+							<p>首页</p>
+						</a>
+					</li>
+					<li><a href="./view/deal/searchFace.html" id="faqixiezuo">
+						<div class="iconfont icon-renren"></div>
+						<p>搜脸</p>
+					</a></li>
+					<li class="qianshouxiezuo"><a href="javascript:;">
+						<div class="iconfont icon-pinggu"></div>
+						<p>鉴面</p>
+					</a></li>
+					<li class="my"><a href="my.html" style="color:#4169E1;">
+						<div class="iconfont icon-my"></div>
+						<p>我的</p>
+						<span></span>
+					</a></li>
+				</ul>
+			</div>
+			<script type="text/javascript">
+				$(function(){
+//					if(!validateIsLogin()){
+//						window.location.href="./view/login.html";
+//					}else{
+						//1、加载个人信息 
+						//获取localStorage里面的用户信息
+						if(window.localStorage){
+						 	var userInfo=JSON.parse(localStorage.getItem("user"));
+						 	var userId=userInfo.id;//发起人id
+						 	console.log(userInfo)
+						 	$("#headPic").attr("src",ctx+"/gongan/ServletDownload?"+userInfo.logPath)
+
+							/* //消息推送--------------------------------start
+						 	if ('WebSocket' in window) {
+					            websocket = new WebSocket("ws://192.168.1.102:8080/gongan/webSocketServer.do?id="+userId);
+					        } else if ('MozWebSocket' in window) {
+					            websocket = new MozWebSocket("ws://192.168.1.102:8080/webSocketServer.do?id="+userId);
+					        } else {
+					            websocket = new SockJS("http://192.168.1.102:8080/sockjs/webSocketServer.do?id="+userId);
+					        }
+					        //连接上时触发
+					        websocket.onopen = function (evnt) {
+					        };
+					        //接收到消息时触发
+					        websocket.onmessage = function (evnt) {
+					        	var msg=eval('(' + evnt.data + ')');
+					        	var list=msg.list;
+					        	var b=0;
+						      		for(var i=0;i<list.length;i++){
+						      			var d=	new Date();
+					      			var item=list[i];
+					      			var messageType = item.messageType;//消息的类型
+					      			var messageContent="" ;
+					      			if(messageType == 2){
+					      				messageContent = "待签收";
+					      			}else if(messageType == 3){
+					      				messageContent = "待反馈";
+					      			}else if(messageType == 4){
+					      				messageContent = "待评估";
+					      			}else if(messageType == 7){
+					      				messageContent = "待评审";
+					      			}else if(messageType == 9){
+					      				messageContent = "待审批申诉";
+					      			}else if(messageType == 12){
+					      				messageContent = "待审批情报小结";
+					      			}else if(messageType == 14){
+					      				messageContent = "被退回协作";
+					      			}
+						      			var message = "您有一条"+messageContent+"事项需要处理！";
+						      	   		//显示消息框
+						      	   		//if(item.isSend!=1){//如果是实时推送，那么改变顶部的消息数
+						      	   			//
+						      	   		//}
+						      			alert(message,b);
+						      	   		
+						      	   		b=b+4500;
+						      		}
+						      		b=0;
+						      		
+						      		//刷新顶部的消息数
+						      		//();
+					        };
+					        websocket.onerror = function (evnt) {
+					        };
+					        websocket.onclose = function (evnt) {
+					        } */
+							$.ajax({
+					  	      	  type: 'POST',
+					  	      	  url: ctx+"/gongan/app/user/doSelectUser.do?userId="+userId,
+					  	      	  dataType:"json",
+					  	      	  async:false,
+					  	      	  success: function(data){
+					  	      		  console.log(data)
+					  	      		  if (typeof(data) != "undefined"){
+					  	      			  $("#userScore").html(data.userScore);//用户的分值 
+					  	      			  $("#userRanking").html(data.userRanking);//用户的排名  
+					  	      			  $("#userDeptRanking").html(data.userDeptRanking);//用户所在单位的排行   
+					  	      			  //用户待签收的协作条数
+					  	      			  if(data.toBeSigned==0){
+					  	      			  	$(".warn1").css("display","none");
+					  	      			  }else{
+					  	      			  	$(".warn1").css("display","block");
+					  	      			  	$("#toBeSigned").html(data.toBeSigned); 
+					  	      			  }
+					  	      			  //用户待反馈的协作条数 
+					  	      			  if(data.toFeedback==0){
+					  	      			  	$(".warn2").css("display","none");
+					  	      			  }else{
+					  	      			  	$(".warn2").css("display","block");
+					  	      			  	 $("#toFeedback").html(data.toFeedback);
+					  	      			  }
+					  	      			  //用户待评估
+					  	      			  if(data.toEvaluation==0){
+					  	      			  	$(".warn3").css("display","none");
+					  	      			  }else{
+					  	      			  	$(".warn3").css("display","block");
+					  	      			  	$("#toEvaluation").html(data.toEvaluation);
+					  	      			  }
+					  	      			  //最下边栏的
+					  	      			  if(data.toBeSigned==0){
+					  	      			  	$(".warn5").css("display","none");
+					  	      			  }else{
+					  	      			  	$(".warn5").css("display","block");
+					  	      			  	$("#toBeSigned2").html(data.toBeSigned);
+					  	      			  }
+					  	      			  //待审批
+					  	      			  if(data.toExamine==0){
+					  	      			  	$(".warn4").css("display","none");
+					  	      			  }else{
+					  	      			  	$(".warn4").css("display","block").text(data.toExamine);
+					  	      			  }
+					  	      		  }
+					  	      	  },
+					  	      	  error:function(){
+					  	      		  diaLog("error");
+					  	      	  }
+				        	 });
+						}
+						//签到
+						$("#signed").click(function(){
+							$.ajax({
+					  	      	  type: 'POST',
+					  	      	  url: ctx+"/gongan/app/user/doSign.do?userId="+userId,
+					  	      	  dataType:"json",
+					  	      	  async:false,
+					  	      	  success: function(data){
+					  	      		  if(data.status==1){
+					  	      		  	diaLog("今日签到加分:"+data.addScore);
+					  	      		  }else if(data.status==3){
+					  	      		  	diaLog("今日已签到");
+					  	      		  }else{
+					  	      			  diaLog("签到失败");
+					  	      		  }
+					  	      	  },
+					  	      	  error:function(){
+					  	      		  diaLog("error");
+					  	      	  }
+				        	 });
+						})
+						
+						//2、点击注销
+						$("#logout").click(function(){
+//							$.ajax({
+//					  	      	  type: 'POST',
+//					  	      	  url: ctx+"/gongan/app/user/loginOut.do",
+//					  	      	  dataType:"json",
+//					  	      	  async:false,
+//					  	      	  success: function(data){
+//					  	      	  	console.log(data)
+//					  	      	  },
+//					  	      	  error:function(){
+//					  	      		  diaLog("error");
+//					  	      	  }
+//				        	 });
+							if(localStorage.getItem("user")){//
+								localStorage.removeItem("user");
+								window.location.href="view/login.html";//跳转到登录页面
+							}
+						});
+					
+//					}
+					
+				});
+			</script>
+	</body>
+</html>
+

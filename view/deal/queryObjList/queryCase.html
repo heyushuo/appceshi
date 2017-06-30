@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../css/faxiezuo.css"/>
+		<script src="../../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/layer2.1/layer.js"></script>
+    	<script src="../../../js/base.js" type="text/javascript" charset="utf-8"></script>
+    	
+		<script type="text/javascript">
+			
+			function closeWindow(){
+				 var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+		         parent.layer.close(index);//shidajian
+			}
+			
+			
+			$(function(){
+				var Request=new UrlSearch(); 
+			    $("#queryObjTypeId").val(Request.id);//设置隐藏域的id
+			    
+				 //提交按钮
+				 $("#btnSure").click(function(){
+					 /* 校验开始 */
+			 //1、案件编码校验
+			 var code=$.trim($("#code").val());
+//		   	 if (typeof(code) == "undefined"||jQuery.trim(code) == ''){
+//			   diaLog('请填写案件标号');
+//			   return false;
+//		     }
+//		   	 //2、案发地点
+		   	 var caseAddress=$.trim($("#caseAddress").val());
+//		   	 if (typeof(caseAddress) == "undefined"||jQuery.trim(caseAddress) == ''){
+//			   diaLog('请填写案发地点');
+//			   return false;
+//		     }
+//		   	 
+//		   	 if(jQuery.trim(caseAddress).length>50){
+//		   		diaLog('案发地点长度不能大于50');
+//				   return false;
+//		   	 }
+//		   	 
+		   	 //3、简要案情
+		   	 var caseContent=$.trim($("#caseContent").val());
+//		   	 if (typeof(caseContent) == "undefined"||jQuery.trim(caseContent) == ''){
+//			   diaLog('请填写简要案情');
+//			   return false;
+//		     }
+//		   	 if(jQuery.trim(caseContent).length>50){
+//		   		diaLog('简要案情长度不能大于50');
+//				   return false;
+//		   	 }
+		   	 //4、案发时间
+		   	var startTime=$.trim($("#startTime").val());
+//		   	 if (typeof(startTime) == "undefined"||jQuery.trim(startTime) == ''){
+//			   diaLog('请填写案发时间');
+//			   return false;
+//		     }
+			if(code==""&&caseAddress==""&&caseContent==""&&startTime==""){
+				diaLog("请填写任意一项");
+				return false;
+			}
+				   	 
+					
+					 $("#btnSure").attr("disabled",true);
+					 var form = $("#form");  
+						var options  = {    
+							url:ctx+'/gongan/app/queryObject/doAddcaseqo.do',   
+							type:'post', 
+							dataType:'json',
+							success:function(data) {
+								$("#btnSure").removeAttr("disabled");
+								if(data.status=='1'){
+									//给父级的父级添加数据
+									var d=	new Date();
+									var queryInfoCreateDate;
+									if (typeof(data.queryInfoCreateDate) != "undefined"){
+				  	      				d.setTime(data.queryInfoCreateDate);
+				  	      				queryInfoCreateDate=d.format('yyyy-MM-dd HH:mm:ss');
+				  	      			}
+									
+									$("#first",parent.parent.document.body).after("<tr><td><input type=\"hidden\" name=\"queryInfoId"+new Date().getTime()+"hylc:caseQo\" value=\""+data.queryInfoId+"\" /><a href=\"javascript:;\" onclick=\"getTails('caseQo',"+data.objectId+")\">查看&nbsp;</a><a href=\"javascript:;\" onclick=\"doDelQueryObject("+data.queryInfoId+",'caseQo',"+data.objectId+",this)\">删除</a></td><td>"+data.objectType+"</td><td>"+data.objectName+"</td><td>"+data.remarks+"</td><td>"+queryInfoCreateDate+"</td></tr>");
+									parent.closeWindow();//关闭父窗口
+									 closeWindow();
+									
+								}else{
+									diaLog('数据加载异常');
+								}
+							},
+							error:function(){
+								$("#btnSure").removeAttr("disabled");
+								diaLog('数据加载异常');
+							}
+						};    
+						form.ajaxSubmit(options);
+					
+			         
+				 });
+			    
+					 //关闭弹窗
+				    function closeLayer(){
+				    	var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+					    parent.layer.close(index);
+				    }
+					$("#btnClose").click(function(){
+						closeLayer();
+					});
+					$("#head").click(function(){
+						closeLayer();
+					})
+			});
+			
+		</script>
+	</head>
+	<body>
+		<form id="form">
+			<div class="box">
+				<div class="head"><a id="head" href="javascript:;" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">查询对象信息增加</span></div>
+				<div class="form">
+					<input type="hidden" name="queryObjTypeId" id="queryObjTypeId"/>
+					<h1 style="background: #6786ED;">案件信息增加</h1>
+					<div class="unit">
+						<label class="text" for="">案件编码</label>
+						<input type="text" class="pull-right" name="code" id="code" />
+					</div>
+					<div class="unit">
+						<label class="text" for="">案发地点</label>
+						<input type="text" class="pull-right" name="caseAddress" id="caseAddress"  />
+					</div>
+					<div class="unit">
+						<label class="text" for="">简要案情</label>
+						<input type="text" class="pull-right" name="caseContent" id="caseContent" />
+					</div>
+					<div class="unit">
+						<label class="text" for="">案发时间</label>
+						<input type="date" class="pull-right" name="startTime" id="startTime" />
+					</div>
+					<div class="btnbox">
+						<input id="btnSure" class="btn btn-width1" type="button" value="确定" />
+						<input id="btnClose" class="btn btn-width1" type="button" value="返回" />
+					</div>
+				</div>
+			</div>
+		</form>
+	</body>
+</html>

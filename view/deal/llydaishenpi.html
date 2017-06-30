@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>联络员待审批</title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/pager.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/pager.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$(function(){
+				//从localStorage中取出用户信息
+				var userInfo=JSON.parse(localStorage.getItem("user"));
+				var userId=userInfo.id;
+				//公共分页方法
+				function commonPager(data,url,callBack){
+					var pagerBox = document.getElementById('pager');//下标所在的div
+					    $.ajax({
+					      	  type: 'POST',
+					      	  url: url,
+					      	  data: data,
+					      	  dataType:"json",
+					      	  async:false,
+					      	  success: function(data){
+				 	      		var pager = new Pager({
+				 	                index: data.page.pageNum,//当前页号
+				 	                total: data.page.totalPages,//总共有多少页
+				 	                parent: pagerBox,
+				 	                onchange: doChangePage
+				 	            });
+					      	  },
+					      	  error:function(){
+					      		  diaLog("error");
+					      	  }
+					  	 });
+				}
+		
+				
+				
+				var url=ctx+"/gongan/app/cooperation/queryLiaisonPage.do";
+		    	//1、页面一加载，查询数据库加载分页列表
+		    	var userInfo=JSON.parse(localStorage.getItem("user"));
+				var userId=userInfo.id;
+		        var data={"pageNo":1,"userId":userId};//联络员查他的协作员
+			    commonPager(data,url,doChangePage);
+		    	//2、单击下面某一页的时候执行的查询
+		        function doChangePage(obj){
+		        	 var tabHtml="";
+		            $.ajax({
+		  	      	  type: 'POST',
+		  	      	  url: url,
+		  	      	  data: {"pageNo":obj.index,"userId":userId},//状态是待反馈，签收人是当前用户的
+		  	      	  dataType:"json",
+		  	      	  async:true,
+		  	      	  success: function(data){
+		  	      	  	if(typeof(data.list)!='undefined'){
+		  	      	  		var list=data.list;
+			  	      		var htmlResult="";
+			  	      		for(var i=0;i<list.length;i++){
+			  	      			var item=list[i];
+			  	      			console.log(item);
+			  	      			status=judgeStatus(item.status);//协作状态
+			  	      			cooperationType=typeJudgment(item.cooperationType);//协作类型
+			  	      			//格式化协作发起时间
+			  	      			var d=	new Date();
+			  	      			if (typeof(item.startTime) != "undefined"){
+			  	      				d.setTime(item.startTime);
+			  	      				startTime=d.format('yyyy-MM-dd HH:mm:ss');
+			  	      			}
+					  	      	
+			  	      			if(item.cooperationDeptId==-1){
+			  	      				tabHtml+="<tr style='height: 0.35rem;'><td><a href='javascript:;' onclick='toRadioTail(\""+item.id+"\")'>详情</a><a style='margin-left:0.05rem;' href='javascript:;' onclick='doLiaisonApproval("+item.id+","+3+")'>同意</a><a style='margin-left:0.05rem;' href='javascript:;' onclick='doLiaisonApproval("+item.id+","+15+")'>退回</a></td><td>"+cooperationType+"</td><td>"+status+"</td><td>"+item.title+"</td><td>"+item.departMentName+"</td><td>"+item.userName+"</td><td>"+item.cooperationDeptName+"</td><td>"+startTime+"</td></tr>"
+			  	      			}else{
+			  	      				tabHtml+="<tr style='height: 0.35rem;'><td><a href='javascript:;' onclick='toTail(\""+item.id+"\")'>详情</a><a style='margin-left:0.05rem;' href='javascript:;' onclick='doLiaisonApproval("+item.id+","+2+")'>同意</a><a style='margin-left:0.05rem;' href='javascript:;' onclick='doLiaisonApproval("+item.id+","+15+")'>退回</a></td><td>"+cooperationType+"</td><td>"+status+"</td><td>"+item.title+"</td><td>"+item.departMentName+"</td><td>"+item.userName+"</td><td>"+item.cooperationDeptName+"</td><td>"+startTime+"</td></tr>"
+			  	      			}
+			  	      		}
+		  	      	  	}
+			  	      		$("#myTab").html("");
+			  	      		$("#myTab").html(tabHtml);
+		  	      	  	
+		  	      	  },
+		  	      	  beforeSend:function(){
+			      	  	$("#myTab").html("<tr><td colspan='3'><img src='../../img/load.gif'></img></td></tr>");
+			      	  },
+			      	  complete:function(){
+				      	$("#loading").html("");
+				      },
+		  	      	  error:function(){
+		  	      		  diaLog("error");
+		  	      	  }
+		        	 });
+		        }
+			});
+			//查看协作详情
+			 function toTail(id){
+	        	window.location.href="xiezuoxiangqing.html?id="+id;
+	        };
+	        
+			//查看广播详情
+			 function toRadioTail(id){
+	        	window.location.href="guangboxiangqing.html?id="+id;
+	        };
+	        //审批按钮id/status
+	         //联络员审批按钮:2/同意,15/不同意	tmh
+		     function doLiaisonApproval(id,status){
+		    	 var returnVal = window.confirm("是否确认？");
+		    	 if(returnVal){
+	    			$.ajax({
+			    		type : 'post',
+			    		url : ctx+"/gongan/app/cooperation/doLiaisonApproval.do" ,
+			    		data :{"id":id,"status":status},
+			    		dataType:'JSON',
+			    		success :function(data){
+			    			if(data.status==1){
+			    				diaLog("成功！");
+			    				window.location.reload();
+			    			}else{
+			    				diaLog("失败！");
+			    			}
+			    		}
+			    	}); 
+		    	 }
+		    }
+		</script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="../../my.html" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">审批协作员</span></div>
+		    <h1 style="font-size: 0.16rem; padding: 0.15rem 0px;text-indent: 0.1rem; ">联络员审批列表</h1>
+		    <div class="scroll">
+		    	<table class="zonghetongji" border="1" style="border-collapse: collapse;">
+			    	<thead>
+			    		<tr bgcolor='#F5F5F5' style='height: 0.4rem;' ><th>操作</th><th>协作类型</th><th>请求状态</th><th>标题</th><th>请求单位</th><th>请求人</th><th>协作单位</th><th>请求时间</th></tr>
+			    	</thead>
+			    	<tbody id="myTab">
+			    		
+			    	</tbody>
+			    </table>
+			    <div id="loading" style="text-align: center;">
+			    	
+			    </div>
+			    <div id="pager">
+			    	
+			    </div>
+		    </div>
+		</div>
+	</body>
+</html>
+
+

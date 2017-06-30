@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>待反馈协作</title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/pager.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/pager.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+
+			$(function(){
+				//获取反馈协作方的id
+				var userInfo=JSON.parse(localStorage.getItem("user"));
+			 	var helperUserId=userInfo.id;//发起人id
+			 	$("#helperUserId").val(helperUserId);
+				//获取协作id
+				var urlStr=document.location.search;
+				var arr= urlStr.split("?");
+				var id=arr[1].split("=")[1];
+				$("#cooperationId").val(id);//将协作id设置到隐藏域中
+				$("#save").click(function(){
+					var rewardValue=$("#rewardValue").val();//奖惩分值
+					var applyReason=$("#applyReason").val();//申请奖惩理由
+					var remarks=$("#remarks").val()//备注
+					//校验
+					//1.奖惩分值
+					if (typeof(rewardValue) == "undefined"||jQuery.trim(rewardValue) == ''){
+					   diaLog("请添加奖惩分值");
+					   return false;
+				   }
+					//2.申请奖惩理由
+					if (typeof(applyReason) == "undefined"||jQuery.trim(applyReason) == ''){
+					   diaLog("请添加申请奖惩理由");
+					   return false;
+				   }
+					//3.备注
+					if (typeof(remarks) == "undefined"||jQuery.trim(remarks) == ''){
+					   diaLog("请添加备注");
+					   return false;
+				   }
+					$("#save").attr("disabled",true);
+					//--校验结束
+					var form = $("#form");  
+					var options  = {    
+						url:ctx+'/gongan/app/cooperation/doExtrascore.do',   
+						type:'post', 
+						dataType:'json',
+						success: function (data) {
+							$("#save").removeAttr("disabled");
+							if(data.status==1){
+				           	window.location.href="participateList.html";
+				           }
+					    },
+						error:function(){
+							$("#save").removeAttr("disabled");
+							diaLog("请求失败");
+						}
+					};    
+					form.ajaxSubmit(options);
+				});
+			})
+		</script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">申请加分</span></div>
+		    <form id="form">
+		    <input type="hidden" name="cooperationId" id="cooperationId"/><!-- 协作id -->
+		    <input type="hidden" name="helperUserId" id="helperUserId"/><!-- 反馈协作方id -->
+		    <div class="form" style="border-top: none;" >
+				<h1>请求信息</h1>
+				<div class="unit">
+					<label class="text" for="bonusScore">奖惩分值:</label>
+					<input type="text" name="rewardValue" id="rewardValue" />
+				</div>
+			</div>
+			<div class="form" style="border: none;"  >
+				<div class="xiezuo-content" style="margin-top: 0.1rem;">
+					<h1 class="border-none">申请奖惩理由</h1>
+					<textarea id="applyReason" name="applyReason" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+				</div>
+				<div class="xiezuo-content">
+					<h1 class="border-none">备注</h1>
+					<textarea id="remarks" name="remarks" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+				</div>
+			</div>
+		    </form>
+			<div class="btnbox">
+				<input id="save" class="btn btn-width2" type="button" value="保存" />
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">查询对象信息增加</span></div>
+			<div class="form">
+				<h1 style="background: #6786ED;">反馈</h1>
+				<div class="unit">
+					<label class="text" for="feedBackStatus">反馈状态</label>
+					<input type="text" class="pull-right" name="feedbackStatus" id="feedBackStatus" value="" />
+				</div>
+				<div class="unit">
+					<label class="text" for="feedbackTime">反馈时间</label>
+					<input type="date" class="pull-right" name="" id="feedbackTime" value="" />
+				</div>
+				<div class="unit">
+					<label class="text" for="feedbackSparetime">反馈剩余时间</label>
+					<input type="text" class="pull-right" name="" id="feedbackSparetime" value="" />
+				</div>
+			</div>
+			<!--<div class="form">
+				<h1 style="background: #6786ED;">反馈信息列表</h1>
+				<div class="unit">
+					<label class="text" for="">反馈状态</label>
+					<input type="text" class="pull-right" name="" id="" value="" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">反馈时间</label>
+					<input type="text" class="pull-right" name="" id="" value="" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">反馈剩余时间</label>
+					<input type="text" class="pull-right" name="" id="" value="" />
+				</div>
+			</div>-->
+			<div class="search-people">
+				<h1>反馈信息列表</h1>
+				<ul class="clearfix sp-nav">
+					<li><a href="javascript:;">模板下载</a></li>
+					<li><a href="javascript:;">导入</a></li>
+					<li id="addFankui"><a href="javascript:;">增加</a></li>
+					<li><a href="javascript:;">删除</a></li>
+				</ul>
+				<div class="scroll">
+			    	<table id="addSearchObj" class="zonghetongji" border="1" style="border-collapse: collapse;" >
+				    </table>
+			    </div>
+			</div>
+			<div class="btnbox">
+				<input id="sendFankui" class="btn btn-width2" type="button" value="反馈" />
+			</div>
+		</div>
+	</body>
+</html>
+<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/layer2.1/layer.js"></script>
+
+<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	window.onload=function(){
+	//rem布局
+	document.documentElement.style.fontSize = innerWidth/3.2 +"px";
+    window.addEventListener("resize",function(){
+        document.documentElement.style.fontSize = innerWidth/3.2  + "px";
+    },false)
+}
+//反馈
+//回填数据
+var urlStr=document.location.search;
+var arr= urlStr.split("?");
+var id=arr[1].split("=")[1];
+var str="<tr><td>反馈内容</td><td>反馈单位</td><td>反馈人</td><td>反馈人联系方式</td><td>反馈时间</td><td>上传附件</td></tr>";
+		$("#addSearchObj").html(str);
+$.ajax({
+	type:"post",
+	url:ctx+"/gongan/app/togetfeedback/queryCooperTeedBack.do?id="+id,
+	async:true,
+	datatype:"json",
+	success:function(data){
+		if (data.status==1) {
+			var status=data.queryCooperTeedBack.status;
+			
+			$("#feedBackStatus").val(status);
+			var feedbackTime="";
+			var d=new Date();
+			//时间格式化
+  			if (typeof(data.queryCooperTeedBack.feedbackTime) != "undefined"){
+  				d.setTime(data.queryCooperTeedBack.feedbackTime);
+  				feedbackTime=d.format('yyyy-MM-dd HH:mm:ss');
+  			}
+			$("#feedbackTime").val(feedbackTime);
+			$("#feedbackSparetime").val(data.sparetime);
+			for(var i=0;i<data.queryTogetFeedBackList.length;i++){
+				var item=data.queryTogetFeedBackList[i];
+				var d=new Date();
+				var createDate="";
+				if (typeof(item.createDate) != "undefined"){
+	  				d.setTime(item.createDate);
+	  				createDate=d.format('yyyy-MM-dd HH:mm:ss');
+	  			}
+				str+="<tr><td>"+item.commentBack+"</td><td>"+item.departmentName+"</td><td>"+item.feedBackUsrId+"</td><td>"+item.phone+"</td><td>"+createDate+"</td><td>"+item.filePath+"</td></tr>";
+			}
+			$("#addSearchObj").html(str);
+		}
+		
+	},
+	error:function(){
+		diaLog("获取失败");
+	}
+});
+$("#addFankui").click(function(){
+	window.location.href="addFankui.html?cooperationId="+id;
+})
+$("#sendFankui").click(function(){
+	window.location.href="daifankui.html";
+})
+</script>

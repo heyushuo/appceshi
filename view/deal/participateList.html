@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>我参与的协作列表</title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/pager.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/pager.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="../../my.html" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">我参与的协作</span></div>
+		    <h1 style="font-size: 0.16rem; padding: 0.15rem 0px;text-indent: 0.1rem; ">我参与的协作</h1>
+		    <div class="scroll">
+		    	<table class="zonghetongji" border="1" style="border-collapse: collapse;">
+			    	<thead>
+			    		<tr bgcolor='#F5F5F5' style='height: 0.4rem;' ><td style='width:20%;'>操作</td><td>请求状态</td><td>标题</td><td>请求人</td><td>请求单位</td><td style='width: 20%;'>发起时间</td></tr>
+			    	</thead>
+			    	<tbody id="myTab">
+			    		
+			    	</tbody>
+		    	</table>
+			    <div id="loading" style="text-align: center;">
+			    	
+			    </div>
+			     <div id="pager">
+		    	
+		    	</div>
+		    </div>
+		   
+		</div>
+		<script type="text/javascript">
+		$(function(){
+			//从localStorage中取出用户信息
+			var userInfo=JSON.parse(localStorage.getItem("user"));
+			var userId=userInfo.id;
+			var departmentId = userInfo.departmentId;
+			//公共分页方法
+			function commonPager(data,url,callBack){
+				var pagerBox = document.getElementById('pager');//下标所在的div
+				    $.ajax({
+				      	  type: 'POST',
+				      	  url: url,
+				      	  data: data,
+				      	  dataType:"json",
+				      	  async:false,
+				      	  success: function(data){
+				      		  console.log(data)
+			 	      		var pager = new Pager({
+			 	                index: data.page.pageNum,//当前页号
+			 	                total: data.page.totalPages,//总共有多少页
+			 	                parent: pagerBox,
+			 	                onchange: doChangePage
+			 	            });
+				      	  },
+				      	  error:function(){
+				      		  diaLog("error");
+				      	  }
+				  	 });
+			}
+	
+			
+			
+			var url=ctx+"/gongan/app/cooperation/queryMyPartiCoop.do";
+	    	//1、页面一加载，查询数据库加载分页列表
+	        var data={"pageNo":1,"userId1":userId,"coopDeptId":departmentId};//,"":
+		    commonPager(data,url,doChangePage);
+	        
+	    	//2、单击下面某一页的时候执行的查询
+	        function doChangePage(obj){
+	        	 var tabHtml="";
+	            $.ajax({
+	  	      	  type: 'POST',
+	  	      	  url: url,
+	  	      	  data: {"pageNo":obj.index,"userId1":userId,"coopDeptId":departmentId},
+	  	      	  dataType:"json",
+	  	      	  async:true,
+	  	      	  success: function(data){
+	  	      		 if(data.status=="1"){
+	  	      			 var roleId = data.roleId;
+	  	      			var list=data.list;
+		  	      		var htmlResult="";
+		  	      		for(var i=0;i<list.length;i++){
+		  	      			var d=	new Date();
+		  	      			var item=list[i];
+		  	      			var cooperationType=item.cooperationType;//协作类型
+		  	      			var status=item.status;//请求状态
+		  	      			var title=item.title;//标题
+		  	      			var departmentId=item.departmentId;//请求单位id
+		  	      			var applyDepartName=item.departMentName;//请求单位名称
+		  	      			var promoterUserId=item.promoterUserId;//发起人id
+		  	      			var applyName=item.userName;//发起人姓名
+		  	      			var cooperationDeptId=item.cooperationDeptId;//协作单位id
+		  	      			var cooperatDeptName=item.cooperationDeptName;//协作单位
+		  	      		    var coopSendStatus=item.coopSendStatus;//协作单位是否发起过情报小结  1没有2发起过
+		  	      			var startTime='';//协作发起时间
+		  	      			var id=item.id;//协作id
+		  	      			var number=item.number;
+		  	      			//flag1是否申诉过 flag是否申请加分
+		  	      			//协作类型
+			  	      		cooperationType=typeJudgment(cooperationType);
+		  	      			//格式化协作发起时间
+		  	      			if (typeof(item.startTime) != "undefined"){
+		  	      				d.setTime(item.startTime);
+		  	      				startTime=d.format('yyyy-MM-dd HH:mm:ss');
+		  	      			}
+		  	      			tabHtml+="<tr style='height: 0.35rem;'>";
+			  	      		if(item.cooperationDeptId==-1){
+			  	      			status=judgeStatus(status);
+								//我参与的  协作广播 ，只能查看详情
+			  	      		       tabHtml+="<td><a href='javascript:;' onclick='toTail("+id+")'>详情</a></td><td>"+status+"</td><td>"+title+"</td><td>"+applyName+"</td><td>"+applyDepartName+"</td><td>"+startTime+"</td>";
+							}else{
+			  	      			if(status==5){
+			  	      				status=judgeStatus(status);
+			  	      			    tabHtml +="<td>";
+									if(coopSendStatus==1 && roleId!=1){
+										tabHtml += "<a href='javascript:;' onclick='toSection("+id+",\""+number+"\")'>情报小结</a>&nbsp;"
+									}
+									    tabHtml+="<a href='javascript:;' onclick='toTail(\""+id+"\")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='addScores(\""+id+"\")'>加分</a><a style='margin-left:0.05rem' href='javascript:;' onclick='appeal(\""+id+"\")'>申诉</a></td><td>"+status+"</td><td>"+title+"</td><td>"+applyName+"</td><td>"+applyDepartName+"</td><td>"+startTime+"</td>";
+			  	      			}else if(status == 8){
+			  	      			    status=judgeStatus(status);
+									tabHtml +="<td>";
+									if(coopSendStatus==1 && roleId!=1){
+										tabHtml += "<a href='javascript:;' onclick='toSection("+id+",\""+number+"\")'>情报小结</a>&nbsp;"
+									}
+									 tabHtml+="<a href='javascript:;' onclick='toTail(\""+id+"\")'>详情</a><a style='margin-left:0.05rem' href='javascript:;' onclick='appeal(\""+id+"\")'>申诉</a></td><td>"+status+"</td><td>"+title+"</td><td>"+applyName+"</td><td>"+applyDepartName+"</td><td>"+startTime+"</td>";
+								}else if(status == 10){
+									status=judgeStatus(status);
+									tabHtml +="<td>";
+									if(coopSendStatus==1 && roleId!=1){
+										tabHtml += "<a href='javascript:;' onclick='toSection("+id+",\""+number+"\")'>情报小结</a>&nbsp;"
+									}
+									tabHtml+="<td><a href='javascript:;' onclick='toTail(\""+id+"\")'>详情</a></td><td>"+status+"</td><td>"+title+"</td><td>"+applyName+"</td><td>"+applyDepartName+"</td><td>"+startTime+"</td>";
+								}else if(status >=5 && roleId!=1 && coopSendStatus==1){
+									status=judgeStatus(status);
+									tabHtml +="<td><a href='javascript:;' onclick='toSection("+id+",\""+number+"\")'>情报小结</a>&nbsp;<a href='javascript:;' onclick='toTail(\""+id+"\")'>详情</a></td><td>"+status+"</td><td>"+title+"</td><td>"+applyName+"</td><td>"+applyDepartName+"</td><td>"+startTime+"</td>";
+								}else{
+									status=judgeStatus(status);
+									tabHtml+="<td><a href='javascript:;' onclick='toTail(\""+id+"\")'>详情</a></td><td>"+status+"</td><td>"+title+"</td><td>"+applyName+"</td><td>"+applyDepartName+"</td><td>"+startTime+"</td>";
+								}
+							}
+					    	tabHtml+="</tr>";
+		  	      		}
+		  	      		$("#myTab").html("");
+		  	      		$("#myTab").html(tabHtml);
+	  	      		 }else{
+	  	      			 diaLog("加载数据失败");
+	  	      		 }
+	  	      		
+	  	      	  },
+	  	      	  beforeSend:function(){
+			      	  	$("#myTab").html("<tr><td colspan='5'><img src='../../img/load.gif'></img></td></tr>");
+			      	  },
+			      	  complete:function(){
+				      	$("#loading").html("");
+				      },
+
+	  	      	  error:function(){
+	  	      		  diaLog("error");
+	  	      	  }
+	        	 });
+	        }
+		});
+		
+		
+		//查看协作详情
+		function toTail(id){
+			window.location.href="xiezuoxiangqing.html?id="+id;
+		}
+		//申请加分
+		function addScores(id){
+			window.location.href="jiafenContent.html?id="+id;
+		}
+		//申诉
+		function appeal(id){
+			window.location.href="shensuContent.html?cooperationId="+id;
+		}
+		//确认完成
+		function doSure(id){
+			$.ajax({
+				type:"post",
+				url:ctx+"/gongan/app/intelligence/updateCooperationStatus.do",
+				async:true,
+				dataType:"json",
+				data:{"cooperationId":id},
+				success:function(data){
+					console.log(data)
+					if(data.status==1){
+						window.location.reload();
+					}
+				},
+				error:function(){
+					diaLog("error");
+				}
+			});
+		}
+		//情报小节
+		function toSection(id,number){
+			console.log(number)
+			window.location.href="./qingbaoxiaojieContent.html?id="+id+"&number="+number;
+		}
+	</script>
+	</body>
+</html>
+
+

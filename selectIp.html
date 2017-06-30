@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<!--<link rel="stylesheet" type="text/css" href="css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="css/xiezuozonghetongji.css"/>-->
+		<style type="text/css">
+			.box{
+				font-size: 0.14rem;
+				font-family: "微软雅黑";
+			}
+			*{margin: 0;padding: 0;}
+			.pull-left {
+			    float: left;
+			}
+			a {
+			    text-decoration: none;
+			    cursor: pointer;
+			    color: #333;
+			    -webkit-tap-highlight-color: rgba(255,255,255,0);
+			}
+			ul li {
+			    float: left;
+			    list-style: none;
+			}
+			.clearfix:after {
+			    display: block;
+			    clear: both;
+			    content: "";
+			    visibility: hidden;
+			    height: 0;
+			}
+			/*头部*/
+			.head{
+				width: 100%;
+				height: 0.4rem;
+				line-height: 0.4rem;
+				background: #F5F5F5;
+				text-align: center;
+			}
+			.head a{
+				display: block;
+				width: 10%;
+				height: 0.4rem;
+				font-size: 0.2rem;
+			}
+			.head span{
+				display: block;
+				width: 90%;
+				font-weight: bold;
+				font-size: 0.14rem;
+			}
+			.tabChange {
+			    margin: 0.2rem 0 0.1rem 0;
+			}
+			.tabChange .active {
+			    color: #6786ED;
+			    background: #fff;
+			}
+			.tabChange li {
+			    width: 33.3%;
+			    padding: 0.1rem 0;
+			    text-align: center;
+			    font-weight: bold;
+			    background: #F3F3F3;
+			    -webkit-box-sizing: border-box;
+			    -moz-box-sizing: border-box;
+			    box-sizing: border-box;
+			    border: 1px solid #CBCBCB;
+			    border-left: none;
+			}
+			/*tab切换*/
+			.tabHead ul li{
+				width: 33.3%;
+				text-align: center;
+				padding: 0.1rem 0;
+			}
+			.tab{
+				display: none;
+				margin-top: 0.3rem;
+				border-top: 1px solid #CBCBCB;
+			}
+			.tab .list li{
+				width: 100%;
+				padding: 0.1rem 0;
+				border-bottom: 1px solid #CBCBCB;
+			}
+			.tab .list li label{
+				display: inline-block;
+				width: 50%;
+				text-align: center;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+			.tab .list li span{
+				display: inline-block;
+				width: 47%;
+				text-align: center;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+			.login{
+				background: #FFFFFF;
+				margin-top: 0.2rem;
+				padding: 0px 0.2rem;
+				font-size: 0.16rem;
+				border-bottom: 1px solid #E4E3E6;
+				border-top: 1px solid #E4E3E6;
+			}
+			.account{
+				padding: 0.2rem 0px;
+				border-bottom: 1px solid #E4E3E6;
+			}
+			.account input{
+				border:none;
+				height: 0.2rem;
+				outline: none;
+				font-size: 0.16rem;
+			}
+			.password{
+				padding: 0.2rem 0px;
+			}
+			.password input{
+				border: none;
+				height: 0.2rem;
+				outline: none;
+				font-size: 0.16rem;
+			}
+			p{
+				text-align: center;
+				margin-top: 0.25rem;
+			}
+			p input{
+				width: 85%;
+				height: 0.4rem;
+				background: #007AFF;
+				color: #FFFFFF;
+				text-align: center;
+				border: none;
+				outline: none;
+				-webkit-border-radius: 0.05rem;
+				-moz-border-radius: 0.05rem;
+				border-radius: 0.05rem;
+				font-size: 0.16rem;
+			}
+		</style>
+		<script type="text/javascript">
+			(function (doc, win) {
+               var docEl = doc.documentElement,
+                   resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                   //orientationchange 事件是在用户水平或者垂直翻转设备（即方向发生变化）时触发的事件。
+                   //resize事件是屏幕缩放时候触发的事件
+                   recalc = function () {
+                       var clientWidth = docEl.clientWidth;
+                       console.log(clientWidth)
+                       if (!clientWidth) return;
+                       if(clientWidth>=640){
+                           docEl.style.fontSize = '100px';
+                       }else{
+                           docEl.style.fontSize = clientWidth / 3.2 + 'px';
+                       }
+                   };
+               if (!doc.addEventListener) return;
+               win.addEventListener(resizeEvt, recalc, false);
+               doc.addEventListener('DOMContentLoaded', recalc, false);
+           })(document, window);
+		</script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left"><</a><span class="pull-left">服务器切换</span></div>
+			
+			<ul class="tabChange clearfix" id="tabChange">
+		   		<li class="active">省级IP</li>
+		   		<li>县级IP</li>
+		   		<li>自定义IP</li>
+		   	</ul>
+		   	<div class="tab" style="display: block;">
+		   		<ul class="list clearfix">
+		   			<li>
+		   				<label>甘肃省公安厅:</label>
+		   				<span>172.16.10.112:58080</span>
+		   			</li>
+		   			<li>
+		   				<label>江西省公安厅:</label>
+		   				<span>192.168.10.34:58080</span>
+		   			</li>
+		   			<li>
+		   				<label>内蒙古公安厅:</label>
+		   				<span>127.0.0.1:40400</span>
+		   			</li>
+		   			<li>
+		   				<label>山西省公安厅:</label>
+		   				<span>127.0.0.1:4200</span>
+		   			</li>
+		   			<li>
+		   				<label>浙江省公安厅:</label>
+		   				<span>172.18.18.72:8080</span>
+		   			</li>
+		   		</ul>
+		   	</div>
+		   	<div class="tab">
+		   		<ul class="list clearfix">
+		   			<li>
+		   				<label>甘肃省兰州市公安局:</label>
+		   				<span>192.168.20.80:18080</span>
+		   			</li>
+		   			<li>
+		   				<label>石家庄市公安局:</label>
+		   				<span>192.168.30.51:1905</span>
+		   			</li>
+		   			<li>
+		   				<label>浙江省宁波市公安局:</label>
+		   				<span>172.21.172.30:8180</span>
+		   			</li>
+		   			<li>
+		   				<label>浙江省嘉兴市公安局:</label>
+		   				<span>127.0.0.1:21330</span>
+		   			</li>
+		   		</ul>
+		   	</div>
+		   	<div class="tab" style="border: none;">
+		   		<div class="login">
+					<div class="password">
+						<label>服务器IP:</label>
+						<input id="ip" name="ip" type="input" placeholder="请输入映射地址" />
+					</div>
+				</div>
+				<p><input id="btnSure" type="button" value="确认" /></p>
+		   	</div>
+		</div>
+	</body>
+</html>
+<script src="js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	//tab切换
+$("#tabChange li").click(function(){
+	var index=$(this).index();
+	$(this).addClass("active").siblings().removeClass("active");
+	$(".tab").eq(index).show().siblings(".tab").hide();
+})
+$(".list li").click(function(){
+	var ip=$(this).find('span').text();
+//	window.location.href="http://10.160.26.133:8080/gongan/app/index.html?ip="+ip
+	alert(ip)
+})
+$("#btnSure").click(function(){
+	var ip=$.trim($("#ip").val());
+//	window.location.href="http://10.160.26.133:8080/gongan/app/index.html?ip="+ip
+	alert(ip);
+})
+</script>

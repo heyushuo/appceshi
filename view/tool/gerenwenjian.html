@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/pager.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			.a-upload{
+				margin: 0.1rem 0.1rem;
+				position: relative;
+				/*height: 0.38rem;*/
+				width: 100%;
+				overflow: hidden;
+				font-size: 0.14rem;
+			}
+			.a-upload #fileName{
+				margin-left: 0.08rem;
+			}
+			.a-upload .fileContent{
+				height: 0.35rem;
+				line-height: 0.34rem;
+				padding: 0px 0.05rem;
+				display: inline-block;
+				border: 1px solid #CCCCCC;
+				-webkit-border-radius: 0.05rem;
+				-moz-border-radius: 0.05rem;
+				border-radius: 0.05rem;
+			}
+			.a-upload  input {
+				width: 40%;
+				height: 0.35rem;
+			    position: absolute;
+			    left: 0;
+			    top: 0;
+			    opacity: 0;
+			    filter: alpha(opacity=0);
+			    /*cursor: pointer;*/
+			    display: inline-block;
+			    outline: none;
+			}
+			input[type="button"]{
+				border: none;
+				margin: 0rem 0.1rem 0.1rem 0.1rem;
+				padding: 0.05rem 0.05rem;
+				-webkit-border-radius: 0.05rem;
+				-moz-border-radius: 0.05rem;
+				border-radius: 0.05rem;
+				background: #6786ED;
+				color: white;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box">
+		<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">个人文件</span></div>
+		<form id="form" method="post" enctype="multipart/form-data" >
+			<div align="left" class="a-upload"><input id="files" name="files" type="file"/><span class="fileContent" >点击这里添加文件</span><span id="fileName"></span></div>
+		</form>
+		<div><input id="btnUpload" type="button" value="上传" /></div>
+		<div class="scroll">
+			<table id="fileList" class="zonghetongji" border="1" style="border-collapse: collapse;">
+			</table>
+			<div id="loading" style="text-align: center;">
+			    	
+		    </div>
+			<div id="pager">
+				
+			</div>
+		</div>
+		</div>
+	</body>
+</html>
+<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/layer2.1/layer.js"></script>
+
+<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/pager.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	window.onload=function(){
+		//rem布局
+		document.documentElement.style.fontSize = innerWidth/3.2 +"px";
+	    window.addEventListener("resize",function(){
+	        document.documentElement.style.fontSize = innerWidth/3.2  + "px";
+	    },false)
+	}
+	//格式化时间
+	function getLocalTime(nS) {
+    var dateStr=new Date(nS).toLocaleDateString();
+    dateStr=dateStr.replace(/年|月/g, "/").replace(/日/g,"");
+    var dataArray = dateStr.split("/");
+    dataArray[1] < 10 ? dataArray[1] = "0" + dataArray[1] : dataArray[1] = dataArray[1];
+    dataArray[2] < 10 ? dataArray[2] = "0" + dataArray[2] : dataArray[2] = dataArray[2];
+    var str= dataArray.join("-");
+    var hours=(new Date(nS)).getHours(); //获取当前小时数(0-23)
+    var minutes=(new Date(nS)).getMinutes(); //获取当前分钟数(0-59)
+    var seconds=(new Date(nS)).getSeconds();
+    if (minutes < 10) {
+        minutes = '0' + minutes;
+    }
+    if (seconds < 10) {
+        seconds = '0' + seconds;
+    }
+   return str+=" "+hours+":"+minutes+":"+seconds
+}
+	
+	
+	$("#files").on("change",function(e){
+		var name = e.currentTarget.files[0].name;
+		console.log(name)
+		$("#fileName").text( name );
+	})
+	//从localStorage中取出用户信息
+	var userInfo=JSON.parse(localStorage.getItem("user"));
+	var userId=userInfo.id;
+	//上传文件
+    $("#btnUpload").click(function(){
+ 	  	 	var form = $("#form");  
+			var options  = {    
+				url:ctx+'/gongan/app/file/doSaveFile.do',   
+				type:'post', 
+				data:{"userId":userId},
+				dataType:'json',
+				success:function(data) {
+					if(data.status==0){
+						diaLog("添加成功");
+						window.location.href="gerenwenjian.html";
+					}else if(data.status==1){
+						diaLog("添加失败");
+					}
+				},
+				error:function(){
+					diaLog("请求失败");
+				}
+			};    
+			form.ajaxSubmit(options);
+ 	 });
+ 	  //获取个人文件列表
+ 	  var str='<tr bgcolor="#F5F5F5" style="height: 0.4rem;"><th>序号</th><th>文件名</th><th>创建日期</th><th colspan="2">操作</th></tr>';
+ 	  $("#fileList").html(str);
+ 	//从localStorage中取出用户信息
+	var userInfo=JSON.parse(localStorage.getItem("user"));
+	var userId=userInfo.id;
+	//公共分页方法
+	function commonPager(data,url,callBack){
+		var pagerBox = document.getElementById('pager');//下标所在的div
+		    $.ajax({
+		      	  type: 'POST',
+		      	  url: url,
+		      	  data: data,
+		      	  dataType:"json",
+		      	  async:false,
+		      	  success: function(data){
+	 	      		var pager = new Pager({
+	 	                index: data.page.pageNum,//当前页号
+	 	                total: data.page.totalPages,//总共有多少页
+	 	                parent: pagerBox,
+	 	                onchange: doChangePage
+	 	            });
+		      	  },
+		      	  error:function(){
+		      		  diaLog("error");
+		      	  }
+		  	 });
+	}
+	var url=ctx+"/gongan/app/file/doQueryMyFile.do";
+	//1、页面一加载，查询数据库加载分页列表
+	var userInfo=JSON.parse(localStorage.getItem("user"));
+	var userId=userInfo.id;
+    var data={"pageNo":1,"pageSize":10,"userId":userId};
+    commonPager(data,url,doChangePage);
+	//2、单击下面某一页的时候执行的查询
+    function doChangePage(obj){
+        $.ajax({
+      	  type: 'POST',
+      	  url: url,
+      	  data: {"pageNo":obj.index,"pageSize":10,"userId":userId},
+      	  dataType:"json",
+      	  async:true,
+      	  success: function(data){
+  	      		for(var i=0;i<data.list.length;i++){
+	  	      		str+="<tr style='height: 0.35rem;'><td>"+(i+1)+"</td><td><a href='javascript:;'>"+data.list[i].fileName+"</a></td><td>"+getLocalTime(data.list[i].createDate)+"</td><td><a onclick='deleteFile("+data.list[i].fileLocationId+")' href='javascript:;'>删除</a>&nbsp;&nbsp;<a href='javascript:;'>下载</a></td>";
+  	      		}
+  	      		$("#fileList").html(str);
+      	  	
+      	  },
+      	  beforeSend:function(){
+      	  	$("#loading").html("<img src='../../img/load.gif'></img>");
+      	  },
+      	  complete:function(){
+	      	$("#loading").html("");
+	      },
+
+      	  error:function(){
+      		  diaLog("error");
+      	  }
+    	 });
+    }
+	 //删除文件
+ 	 function deleteFile(id){
+ 	 	$.ajax({
+  	      	  type: 'post',
+  	      	  url: ctx+"/gongan/app/file/doDeleteFile.do",
+  	      	  data: {"fileLocationId":id,"userId":userId},
+  	      	  dataType:"json",
+  	      	  async:true,
+  	      	  success:function(data){
+	  	      		if(data.status==1){
+	  	      			diaLog("删除成功");
+	  	      			window.location.reload();
+	  	      		}else{
+	  	      			diaLog("删除失败");
+	  	      		}
+		  	    },
+		  	  error: function(){
+		  	    		diaLog("error");
+		  	    }
+	        });
+ 	 }
+</script>

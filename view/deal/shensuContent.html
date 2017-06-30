@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+    	
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$(function(){
+				//上传文件弹出框
+				$("#filename").focus(function(){
+			        layer.open({
+			            type: 2,
+			            title: false,
+			            closeBtn: 0, //不显示关闭按钮
+			           	area: ['100%', '100%'],
+			            offset: 'auto', //右下角弹出
+			            content: ['../upload.html', 'no'] //iframe的url，no代表不显示滚动条
+			        });	
+			        
+			      })
+				var request=new UrlSearch();//参数对象
+				var userInfo=JSON.parse(localStorage.getItem("user"));//用户对象
+				console.log(request)
+				var cooperationId=request.cooperationId;//协作id
+				var appealUserId=userInfo.id;//申诉人id
+				var appealDeptId=userInfo.departmentId;//部门id
+				
+				$("#cooperationId").val(cooperationId);//协作id
+				$("#appealUserId").val(appealUserId);//申诉人id
+				$("#appealDeptId").val(appealDeptId);//申诉人部门id
+				
+				
+				$("#send").click(function(){
+					addFiles();
+					//校验
+					//1.悬赏积分  
+					/* var rewardPoints=$("#rewardPoints").val();
+				   	 if (typeof(rewardPoints) == "undefined"||jQuery.trim(rewardPoints) == ''){
+					   diaLog('请填写悬赏积分');
+					   return false;
+				     }
+				   	  if(isNaN(jQuery.trim(rewardPoints))){
+					   diaLog('悬赏积分请填写数字');
+					   return false;
+				   }
+				   
+				   var reg = /^\d+(?=\.{0,1}\d+$|$)/
+				   if(!reg.test(jQuery.trim(rewardPoints))){
+					   diaLog('悬赏积分请填写正数');
+					   return false;
+				   } */
+				   	 //2.申诉标题     
+					var title=$("#title").val();
+				   	 if (typeof(title) == "undefined"||jQuery.trim(title) == ''){
+					   diaLog('请填写申诉标题');
+					   return false;
+				     }
+				   	 //3.申诉理由 
+					var cause=$("#cause").val();
+				   	 if (typeof(cause) == "undefined"||jQuery.trim(cause) == ''){
+					   diaLog('请填写申诉理由');
+					   return false;
+				     }
+				   	 //上传附件校验
+//				   	 var queryObjFilePath=$("#queryObjFilePath").val();
+//				   	 if (typeof(queryObjFilePath) == "undefined"||jQuery.trim(queryObjFilePath) == ''){
+//					   diaLog('请上传附件');
+//					   return false;
+//				     }
+				   	 //--------------验证结束  
+				   	 $("#send").attr("disabled",true);
+					var form = $("#Form");  
+					var options  = {   
+						url:ctx+'/gongan/app/cooperation/doAppeal.do',
+						type:'post', 
+						dataType:'json',
+						success:function(data) {
+							$("#send").removeAttr("disabled");
+							if(data.status==1){
+//								diaLog("申诉成功");
+								window.location.href="participateList.html";
+							}else{
+								diaLog("申诉失败");
+							}
+							
+						},
+						error:function(){
+							$("#send").removeAttr("disabled");
+							diaLog("发送失败");
+						}
+					};    
+					form.ajaxSubmit(options);
+				});
+				
+			});
+			
+			 //删除附件
+		function delFiles(obj){
+			$(obj).parent().parent().remove();
+		}
+		//提交时，保存最后修改后的附件
+		function addFiles(){
+			var length=$(".urls-name").length;
+			var pathHtml='';
+			for(var i=0;i<length;i++){
+				pathHtml+=$(".urls-name").eq(i).val()+";";
+			}
+			$("#queryObjFilePath").val(pathHtml);
+		}
+   	//文件下载和图片下载
+	function downloadfile(path) {
+		var fileUrl=ctx+"/gongan/ServletDownload?"+path;
+//          var fileUrl = server.pub.OaDownFile + businessid+"/"+name;
+        var encodeUrl=encodeURI(fileUrl);//文件的具体地址，具体到文件名称
+        console.log(encodeUrl);
+        console.log(fileUrl);
+       
+        console.log("下载文件地址"+encodeURI(encodeUrl));
+        var dtask = plus.downloader.createDownload(encodeUrl, { method: "GET" });//新建下载任务
+        var w = plus.nativeUI.showWaiting("开始下载...");
+        dtask.addEventListener("statechanged", function (task, status) {
+        	console.log(task.state)
+            switch (task.state) {
+                case 3:	// 已接收到数据
+                    if (w) {
+                        w.setTitle("数据下载中：" + task.downloadedSize + "/" + task.totalSize);
+                    }
+                    break;
+                case 4:	// 下载完成
+                    if (status == 200) {
+                        if (w) {
+                            w.close();
+                        }
+					var reg=/^.*(.jpg|.png|.gif|.ps|.jpeg|.webp)$/i;
+                       if(reg.test(task.filename)){
+                       		plus.gallery.save(task.filename, function() {
+						    mui.confirm("打开相册", "打开相册？", ["打开", "不看"], function(event) {
+						        var gindex = event.index;
+						        console.log(gindex)
+						        if(gindex == 0) {
+						            plus.gallery.pick(function(file) {
+						                mui.toast("你选择了图片：" + file);
+						            }, function(error) {
+						                console.log(error);
+						            }, {
+						                filter: 'image'
+						            });
+						        }
+						    });
+						});
+                       }else{
+                       	plus.runtime.openFile(task.filename, {}, function (e) {
+                            QxMobile.Alert("无法打开此文件：" + e.emssage);
+                        });
+                       }
+                      
+                    } else {
+                        Alert("下载失败：" + status);
+                        plus.nativeUI.closeWaiting();
+                    }
+                    break;
+            }
+        });
+        dtask.start();
+    }
+		</script>
+	</head>
+	<body >
+		<!-- 
+		var cooperationId=request.cooperationId;//协作id
+				var userInfo=JSON.parse(localStorage.getItem("user"));
+				var appealUserId=userInfo.id;//申诉人id
+		
+		 -->
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">填写申诉</span></div>
+			<form id="Form" method="post" enctype="multipart/form-data">
+				<input type="text" hidden="hidden"  name="appealDeptId" id="appealDeptId"  /><!--申诉单位所在部门  -->
+				<input type="text" hidden="hidden"  name="cooperationId" id="cooperationId"  /><!-- 协作id -->
+				<input type="text" hidden="hidden"  name="appealUserId" id="appealUserId"  />
+				<div class="form">
+					<h1>申诉表</h1>
+					<div class="unit" style="display: none;">
+						<label class="text" for="rewardPoints">悬赏积分</label>
+						<input type="text" name="rewardPoints" id="rewardPoints"/>
+					</div>
+					<div class="unit">
+						<label class="text" for="appealTitle">申诉标题:</label>
+						<input type="text" name="title" id="title"  />
+					</div>
+				</div>
+				<div class="search-people">
+					<div class="xiezuo-content">
+						<h1>申诉理由</h1>
+						<textarea id="cause" name="cause" rows="" cols="" placeholder="" ></textarea>
+					</div>
+					<h1>上传附件</h1>
+					<!--<div align="left" class="a-upload fujian"><input class="files" type="file" name="queryObjFilePath" id="queryObjFilePath"/><span class="fileContent" >点击这里上传文件</span><span id="fileName" class="fileName"></span></div>-->
+					<div>
+					     <input type="hidden" id="queryObjFilePath" name="filePath"/>
+		     			<input type="button" value='添加附件' class="form-control" id="filename"/>
+				     </div>
+				     <div>
+				    	<table class="downCommon" style="width: 100%;border-collapse: collapse;border: 1px solid #CBCBCB;text-align:center;" border="1" >
+				    		<tr style="display: none;" id="files"></tr>
+					    </table>
+				    </div>
+					<div class="btnbox">
+						<input id="send" class="btn btn-width2" type="button" value="申诉" />
+					</div>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>

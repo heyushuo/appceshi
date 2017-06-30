@@ -1,0 +1,342 @@
+
+body{
+	color: #333333;
+	font-size: 0.12rem;
+	/* 锟斤拷锟接革拷锟斤拷锟皆ｏ拷锟斤拷锟斤拷锟斤拷锟接碉拷锟皆ｏ拷锟角伙拷锟斤拷锟斤拷锟剿筹拷锟�*/
+  -webkit-overflow-scrolling: touch; 
+}
+.box{
+	width: 100%;
+	height: 100%;
+	overflow-x: hidden;
+	margin-bottom: 0.5rem;
+}
+.head{
+	width: 100%;
+	height: 0.4rem;
+	line-height: 0.4rem;
+	background: #F5F5F5;
+	text-align: center;
+}
+.head a{
+	display: block;
+	width: 10%;
+	height: 0.4rem;
+	font-size: 0.2rem;
+}
+.head span{
+	display: block;
+	width: 90%;
+	font-weight: bold;
+	font-size: 0.14rem;
+}
+.footer{
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	height: 0.5rem;
+	width: 100%;
+	background: white;
+	border-top:1px solid #CBCBCB;
+	
+}
+.footer ul{
+	height: 0.5rem;
+}
+.footer li{
+	width: 25%;
+	height: 100%;
+	text-align: center;
+	cursor: pointer;
+}
+.footer li a{
+	display: block;
+	margin-top: 0.08rem;
+	font-weight: bold;
+	color:#333;
+}
+.footer li div{
+	font-size:0.18rem;
+}
+.qianshouxiezuo{
+	position: relative;
+}
+.qianshouxiezuo span{
+	position: absolute;
+	right: 0.21rem;
+	top: 0.01rem;
+	padding: 0 0.07rem;
+	height: 0.2rem;
+	/*border: 0.05rem 1px #56ADFB;*/
+	border-radius: 0.1rem;
+	text-align: center;
+	line-height: 0.2rem;
+	color: white;
+	background: #FF3B30;
+	display: inline-block;
+	font-size: 12px;
+	font-weight: normal;
+}
+*{
+	margin: 0;
+	padding: 0;
+}
+input[type="text"]{
+	height: 0.2rem;
+	width: 60%;
+	border: none;
+	text-align: right;
+	background:white;
+}
+select{
+	height:0.26rem;
+	max-width: 61%;
+	border: none;
+	background:white;
+}
+textarea{
+	background:white;
+}
+/** 锟斤拷锟斤拷锟斤拷锟竭撅拷 **/
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 锟结构元锟斤拷 */
+dl, dt, dd, ul, ol, li, /* list elements 锟叫憋拷元锟斤拷 */
+pre, /* text formatting elements 锟侥憋拷锟斤拷式元锟斤拷 */
+form, fieldset, legend, button, input, textarea, /* form elements 锟�元锟斤拷 */
+th, td /* table elements 锟斤拷锟皆拷锟�*/ {
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+/** 锟斤拷锟斤拷默锟斤拷锟斤拷锟斤拷 **/
+body, button, input, select, textarea /* for ie */ {
+  font-size: 0.14rem;
+  font-family: "微软雅黑";
+  
+}
+h1, h2, h3, h4, h5, h6 { font-size: 100%; }
+address, cite, dfn, em, var { font-style: normal; } /* 锟斤拷斜锟斤拷锟斤拷锟�*/
+code, kbd, pre, samp { font-family: courier new, courier, monospace; } /* 统一锟饺匡拷锟斤拷锟斤拷 */
+small { font-size: 0.12rem; } /* 小锟斤拷 12px 锟斤拷锟斤拷锟侥猴拷锟斤拷锟侥讹拷锟斤拷锟斤拷 small 锟斤拷 */
+
+/** 锟斤拷锟斤拷锟叫憋拷元锟斤拷 **/
+ul, ol { list-style: none; }
+ul li{
+	float: left;
+}
+
+/** 锟斤拷锟斤拷锟侥憋拷锟斤拷式元锟斤拷 **/
+a { text-decoration: none;cursor: pointer; color: #333; -webkit-tap-highlight-color:rgba(255,255,255,0) }
+/* 锟斤拷锟斤拷 HTML5 元锟斤拷 */
+article, aside, details, figcaption, figure, footer,header, hgroup, menu, nav, section,
+summary, time, mark, audio, video {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+/*float*/
+.pull-left{
+  float:left;
+}
+table{
+	table-layout: fixed;
+}
+table td,table th{
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.pull-right{
+  float:right;
+}
+.pull-right:after,.pull-left:after{
+  clear: both;
+}
+/*clearfix*/
+.clearfix:after{display:block;clear:both;content:"";visibility:hidden;height:0  }
+/*.clearfix:after{clear:both;}*/
+.clearfix{ *zoom:1;/*IE/7/6*/ }
+.hello{
+	color: #777;
+	/*font-size: 300%;*/
+	margin: 20px auto;
+	text-align: center;
+	text-shadow: 2px 5px 5px #bbb;
+	-webkit-text-shadow: 2px 5px 5px #bbb;
+	-moz-text-shadow: 2px 5px 5px #bbb;
+}
+
+.btn-block{
+	text-align: center;
+}
+
+.start{
+	background: #0C9EA9;
+	border: 1px solid #0896A0;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	color: #fff;
+	display: block;
+	font-size: 0.12rem;
+	height: 0.4rem;
+	line-height: 0.4rem;
+	margin: 0 auto;
+	transition: background 1s;
+	text-decoration: none;
+	width: 90%;
+}
+.start:hover{
+	background: #1F8289;
+	box-shadow: 0 5px 10px #ccc;
+	-webkit-box-shadow: 0 5px 10px #ccc;
+	-moz-box-shadow: 0 5px 10px #ccc;
+}
+/*锟斤拷锟斤拷*/
+div.header{
+	width: 100%;
+	background-color: #53B373;
+	color: #fff;
+	height: 0.4rem;
+	text-align: left;
+}
+.header a{
+	color: #fff;
+}
+.back, .head-title, .close{
+	display: inline-block;
+}
+.back, .close{
+	line-height:0.4rem;
+}
+div.back{
+	float: left;
+	text-align: left;
+	text-indent: 1em;
+	/*width: 10%;*/
+}
+div.head-title{
+	margin: 0.05rem 0;
+	text-align: center;
+	width: 75%;
+}
+div.head-title span{
+	display: block;
+	line-height: 0.15rem;
+	font-size: 0.13rem;
+}
+div.close{
+	float: right;
+	margin-right: 1em;
+	text-align: right;
+	/*width: 10%;*/
+}
+/*锟斤拷锟斤拷*/
+/*锟斤拷锟斤拷锟斤拷*/
+.search-box{
+	background-color: #fff;
+	padding: 0.1rem 0.15rem;
+}
+.sb{
+	border: 1px solid #F8B305;
+	border-radius: 0.05rem;
+	height: 0.3rem;
+}
+.sb input{
+	border: none;
+	border-radius: 0.05rem;
+	float: left;
+	height: 100%;
+	text-indent: 1em;
+	width: 80%;
+}
+.sb button{
+	background-color: #f8c244;
+	border: none;
+	color: #fff;
+	float: right;
+	height: 0.3rem;
+	width: 19.5%;
+}
+/*锟斤拷锟斤拷锟斤拷*/
+/*锟斤拷锟斤拷锟斤拷锟�锟斤拷锟斤拷锟斤拷锟斤拷,筛选锟斤拷锟斤拷*/
+.skb-title{
+	background-color: #fff;
+}
+.as-tbl, .as-tbl tr, .as-tbl td{
+	border: 0;
+}
+.as-tbl a{
+	color: #777;
+	padding-bottom: 0.05rem;
+}
+.as-tbl a.active{
+	border-bottom: 2px solid #EF7513;
+	color: #EF7513;
+}
+.skb-tbl{
+	height: 0.3rem;
+	line-height: 0.3rem;
+}
+a.t1, a.t2, a.t3{
+	background-position: 85% 55%;
+	background-repeat: no-repeat;
+	background-size: 10%;
+    display: block;
+    padding: 0;
+}
+a.t1{
+	background-image: url("../images/icon-18.png");
+}
+a.t2{
+	background-image: url("../images/icon-19.png");
+}
+a.t3{
+	background-image: url("../images/icon-20.png");
+}
+/*锟斤拷锟斤拷锟斤拷锟�锟斤拷锟斤拷锟斤拷锟斤拷,筛选锟斤拷锟斤拷*/
+
+/*按钮统一样式*/
+.btnbox{
+	margin: 0 auto;
+	width: 100%; 
+	text-align: center;
+	margin-top: 0.2rem;
+}
+.btn{
+	height: 0.4rem;
+	color: white;
+	text-align: center;
+	line-height: 0.2rem;
+	background: #007AFF;
+	border: none;
+	border-radius: 0.05rem;
+}
+.btn-width1{
+	width: 45%;
+}
+.btn-width2{
+	width: 90%;
+}
+/*边框同意样式*/
+.common-border{
+border: 1px solid #AAAAAA !important;
+}
+.common-left{
+text-align: left !important;
+}
+.btn-search{
+	background:#fff;
+	color: #333333;
+	margin-right: 0.05rem;
+	padding: 0.03rem;
+	margin-top: 0.04rem;
+	border-radius: 3px;
+	border: 1px solid #CBCBCB;
+}
+.daiqianshou .warn{
+display: none;
+}
+.pager-box{
+	font-size: 12px !important;
+	min-width:400px;
+}

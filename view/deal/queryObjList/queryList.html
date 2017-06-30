@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../iconFont/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../css/common.css"/>
+    <script src="../../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css">
+    	.queryClass li{
+    		float: none;
+    		font-size: 0.16rem;
+    		/*padding: 0.15rem 0px;*/
+    		height: 0.4rem;
+    		line-height: 0.4rem;
+    		background: white;
+    		border-bottom: 1px solid #E4E3E6;
+    	}
+    	.queryClass li span{
+    		width: 50%;
+    		display: inline-block;
+    		text-align: center;
+    		-webkit-box-sizing: border-box;
+    		-moz-box-sizing: border-box;
+    		box-sizing: border-box;
+    	}
+    	.queryClass li a{
+    		display: block;
+    	}
+    	.queryClass li span:nth-child(1){
+    		border-right: 1px solid #E4E3E6;
+    	}
+    </style>
+    <script src="../../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+     <script src="../../../js/base.js" type="text/javascript" charset="utf-8"></script>
+    
+    <script src="../../../js/layer2.1/layer.js"></script>
+    
+    <script type="text/javascript">
+		
+		function closeWindow(){
+			 var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+	         parent.layer.close(index);//shidajian
+		}
+		//跳转到添加页面
+		function toAdd(url){
+			//加载查询对象类别
+			layer.open({
+				type: 2,
+				title: false,
+				closeBtn: 0, //不显示关闭按钮
+				area: ['100%', '100%'],
+				offset: 'auto', //右下角弹出
+				content: [url, 'yes'] //iframe的url，no代表不显示滚动条
+			});
+			
+		}
+		
+		
+		$(function(){
+			//加载查询对象类别和名称
+			$.ajax({
+		      	  type: 'POST',
+		      	  url: ctx+"/gongan/app/querytype/ajaxQueryList.do",
+		      	  dataType:"json",
+		      	  async:false,
+		      	  success: function(data){
+		      		  if(data!=null){
+		      			var result="";
+		 	      		for(var i=0;i<data.length;i++){
+		 	      			var item=data[i];
+		 	      			var id=item.id;
+		 	      			var objectName=item.objectName;
+		 	      			var objectType=item.objectType;
+		 	      			
+		 	      			if(item.objectName=="案件"){
+		 	      				result+="<li><a onclick=\"toAdd('queryCase.html?id="+id+"')\" href=\"javascript:;\" ><span id=\"shidajian\">"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="情报线索"){
+		 	      				result+="<li><a onclick=\"toAdd('queryClues.html?id="+id+"')\" href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="虚拟身份"){
+		 	      				result+="<li><a onclick=\"toAdd('queryVirtualPeople.html?id="+id+"')\" href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="工作对象"){
+		 	      				result+="<li><a onclick=\"toAdd('queryPeople.html?id="+id+"')\"  href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="嫌疑人"){
+		 	      				result+="<li><a onclick=\"toAdd('criminalSuspect.html?id="+id+"')\" href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="事件"){
+		 	      				result+="<li><a onclick=\"toAdd('queryEvent.html?id="+id+"')\" href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="车"){
+		 	      				
+		 	      				result+="<li><a  onclick=\"toAdd('queryCar.html?id="+id+"')\" href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="手机"){
+		 	      				
+		 	      				result+="<li><a onclick=\"toAdd('queryPhone.html?id="+id+"')\" href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="其他"){
+		 	      				result+="<li><a onclick=\"toAdd('queryOthers.html?id="+id+"')\" href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="作案工具"){
+		 	      				result+="<li><a onclick=\"toAdd('queryTool.html?id="+id+"')\"  href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}else if(item.objectName=="电脑"){
+		 	      				console.log("进行中 -----------------------");
+		 	      				result+="<li><a onclick=\"toAdd('queryComputer.html?id="+id+"')\"  href=\"javascript:;\"><span>"+objectType+"</span><span>"+objectName+"</span></a></li>";
+		 	      			}
+		 	      			
+		 	      		}
+		 	      		
+		 	      		$("#queryClass").html(result);
+		      		  }
+		      		
+		      	  },
+		      	  error:function(){
+		      		diaLog('error');
+		      	  }
+		  	 });
+			
+			//关闭
+			$("#head").click(function(){
+				closeWindow();
+			})
+		});
+	</script>
+</head>
+<body bgcolor="#EFEFF4">
+	<div class="box">
+		<div class="head"><a id="head" href="javascript:;" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">查询对象信息增加</span></div>
+		<ul id="queryClass" class="queryClass">
+		</ul>
+	</div>
+</body>
+</html>
+

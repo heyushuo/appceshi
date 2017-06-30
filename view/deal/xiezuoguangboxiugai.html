@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+    	<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+			$(function(){
+				//点击添加标签
+				$("#labelName").click(function(){
+			        layer.open({
+			            type: 2,
+			            title: false,
+			            closeBtn: 0, //不显示关闭按钮
+			           	area: ['100%', '100%'],
+			            offset: 'auto', //右下角弹出
+			            content: ['Label.html', 'no'] //iframe的url，no代表不显示滚动条
+			        });	
+				});
+				//数据回显
+				var requestCause,twoRequestCause;
+				var urlStr=document.location.search;
+			    var arr= urlStr.split("?");
+				id=arr[1].split("=")[1]; 
+				$("#id").val(id);
+				$.ajax({
+					type :'get',
+					url  : ctx+"/gongan/app/cooperation/findCooperation.do?id="+id,
+					dataType : 'json',
+					success: function (data){
+						if(data.status==1){
+							var cooperMap=data.find.cooperMap;
+							console.log(cooperMap)
+							$("#rewIntegral").val(cooperMap.rewIntegral);//悬赏积分
+							$("#userName").val(cooperMap.promoterUserIdName);//发起人姓名
+							$("#userPhone").val(cooperMap.phone)//发起人手机
+							$("#connectName").val(cooperMap.connectName);//联系人姓名
+							$("#connectPhone").val(cooperMap.connectPhone);//联系人手机
+							$("#number").val(cooperMap.number);
+							$("#labelName").val(cooperMap.labelText)
+							$("#title").val(cooperMap.title);//标题
+							$('#cooperationType').val(cooperMap.cooperationType);//协作类型
+							$("#timeLimit").val(cooperMap.timeLimit);//反馈时间
+							$("#cooperationContent").val(cooperMap.cooperationContent);//协作内容
+							$("#promoterUserId").val(cooperMap.promoterUserId);
+						 	$("#departmentId").val(cooperMap.departmentId);//设置发起方部门id
+							twoRequestCause=cooperMap.twoRequestCauseId;
+							requestCause=cooperMap.requestCauseId;
+							console.log(cooperMap.queryObjFilePath)
+							if(typeof(cooperMap.queryObjFilePath)!="undefined"){
+								var files=cooperMap.queryObjFilePath;
+								var path=files.split(";");
+								var name='';
+								var fileHtml="";
+								for(var k=0;k<path.length-1;k++){
+									var filename=path[k].split("=")[2];
+									var url=path[k];
+									name +=filename+"&nbsp;";
+									fileHtml += "<tr><td><input type=\"hidden\" class=\"urls-name\" value=\""+url+"\"><a  onclick='downloadfile(\""+url+"\")'  href='javascript:;'>"+filename+"</a>&nbsp;</td><td width='30%'><a href='javascript:;' onclick='delFiles(this)'>删除</a></td></tr>";
+								}
+								$("#files").after(fileHtml);
+							}
+							//console.log(queryObjectTypeList);
+							//1、查询对象列表回显
+							var list=data.find.queryObjectTypeList
+							if(list.length!=0){
+								var result="";
+								for(var i=0;i<list.length;i++){
+									//添加信息
+									var d=	new Date();
+									var queryInfoCreateDate;
+									if (typeof(list[i].createDate) != "undefined"){
+											d.setTime(list[i].createDate);
+											queryInfoCreateDate=d.format('yyyy-MM-dd HH:mm:ss');
+									}
+									$("#first").after("<tr><td><a href=\"javascript:;\" onclick=\"getTails('"+list[i].tableName+"',"+list[i].objectId+")\">查看&nbsp;</a><a href=\"javascript:;\" onclick=\"doDelQueryObject("+list[i].id+",'"+list[i].tableName+"',"+list[i].objectId+",this)\">删除</a></td><td>"+list[i].objectType+"</td><td>"+list[i].objectName+"</td><td>"+list[i].remarks+"</td><td>"+queryInfoCreateDate+"</td></tr>");
+								}
+							};
+							
+						}
+					}
+				});
+				
+				//上传文件弹出框
+				$("#filename").focus(function(){
+			        layer.open({
+			            type: 2,
+			            title: false,
+			            closeBtn: 0, //不显示关闭按钮
+			           	area: ['100%', '100%'],
+			            offset: 'auto', //右下角弹出
+			            content: ['../upload.html', 'no'] //iframe的url，no代表不显示滚动条
+			        });	
+					
+					
+				});
+				
+				//加载查询对象类别列表
+				$("#addQueryObj").click(function(){
+						//iframe窗
+				        layer.open({
+				            type: 2,
+				            title: false,
+				            closeBtn: 0, //不显示关闭按钮
+				           	area: ['100%', '100%'],
+				            offset: 'auto', //右下角弹出
+				            content: ['queryObjList/queryList.html', 'no'] //iframe的url，no代表不显示滚动条
+				        });
+				});
+
+				//-------------------------发送协作start
+			   //发送协作
+			   $("#save").click(function(){
+			   		addFiles();
+				   //1、悬赏积分校验
+				   var rewIntegral=$("#rewIntegral").val();
+				   if (typeof(rewIntegral) == "undefined"||jQuery.trim(rewIntegral) == ''){
+					   diaLog('请添加悬赏积分');
+					   return false;
+				   }
+				   
+				   if(isNaN(jQuery.trim(rewIntegral))){
+					   diaLog('悬赏积分请填写数字');
+					   $("#rewIntegral").val("");
+					   return false;
+				   }
+				   
+				   var reg = /^\d+(?=\.{0,1}\d+$|$)/
+				   if(!reg.test(jQuery.trim(rewIntegral))){
+					   diaLog('悬赏积分请填写正数');
+					   //$("#rewIntegral").val("");
+					   return false;
+				   }
+				   if(rewIntegral>50){
+				   	diaLog('悬赏积分不能大于50积分');
+				   	return false;
+				   }
+				  /*  var user=JSON.parse(localStorage.getItem("user"));
+				   if(!user||typeof(user.scoreCount) == "undefined"||user.scoreCount<parseInt(jQuery.trim(rewIntegral))){
+					   diaLog('当前用户积分数少于悬赏积分'); //当前登录用户存在，并且积分大于当前悬赏积分
+					   return false;
+				   } */
+				   //2、标签校验
+				   var labelName=$("#labelName").val();
+				   if($.trim(labelName)==""){
+					   diaLog('请填写标签');
+					   return false;
+				   }
+				   //3、发起人姓名校验
+				   var userName=$.trim($("#userName").val());
+				   if(typeof(userName) == "undefined"||jQuery.trim(userName) == ''){
+					   diaLog('请填写发起人姓名');
+					   return false;
+				   }
+				   //4、发起人手机
+				   var userPhone=$.trim($("#userPhone").val());
+				   if(typeof(userPhone) == "undefined"||jQuery.trim(userPhone) == ''){
+					   diaLog('请填写发起人手机');
+					   return false;
+				   }
+				   
+				   var re2=new RegExp(/^1[34578]\d{9}$/);
+			        if(!userPhone.match(re2)){
+			        	 diaLog('请填写正确的手机号');
+			        	return false;
+			        }
+				   
+				   //5、联系人姓名
+				   var connectName=$.trim($("#connectName").val());
+				   var connectNameReg = /^[\u4E00-\u9FA5]{2,6}$/;//姓名是2~6个汉字
+				   if(typeof(connectName) == "undefined"||jQuery.trim(connectName) == ''){
+					   diaLog('请填写联系人姓名');
+					   return false;
+				   }
+ 				   if(!connectNameReg.test(connectName)){
+ 						diaLog('请填写2~6个汉字的名字');
+			        	return false;
+ 				    }
+				   //6、联系人联系方式
+				   var connectPhone=$("#connectPhone").val();
+ 				   if(typeof(connectPhone) == "undefined"||jQuery.trim(connectPhone) == ''){
+					   diaLog('请填写联系人联系方式');
+					   return false;
+				   }
+				   //8、标题校验
+				   var title=$("#title").val();
+ 				   if(typeof(title) == "undefined"||jQuery.trim(title) == ''){
+					   diaLog('请填写协作标题');
+					   return false;
+				   }
+ 				   if(jQuery.trim(title).length>30){
+ 					   diaLog('协作标题长度不能大于30');
+					   return false;
+ 				   }
+				   //10、协作类型校验
+				   var cooperationType=$("#cooperationType").val();
+				   if(cooperationType=='-1'){
+					   diaLog('请选择协作类型');
+					   return false;
+				   }
+				   //11、反馈时间校验
+				   var timeLimit=$("#timeLimit").val();
+				    if(typeof(timeLimit) == "undefined"||jQuery.trim(timeLimit) == ''){
+					   diaLog('请填写反馈时间');
+					   return false;
+				   }
+				   
+				   //12、协作内容校验
+				   var cooperationContent=$("#cooperationContent").val();
+ 				   if(typeof(cooperationContent) == "undefined"||jQuery.trim(cooperationContent) == ''){
+					   diaLog('请填写协作内容');
+					   return false;
+				   }
+ 				   if(jQuery.trim(cooperationContent).length>1000){
+ 					   diaLog('协作内容不能超过1000字');
+					   return false;
+ 				   }
+				   
+				   //13、请假事由
+				   var requestCause=$("#requestCause").val();
+				   if(requestCause=='-1'){
+					   diaLog("请选择请求事由");
+					   return false;
+				   }
+				   //14、二级请假事由
+				   var twoRequestCause=$("#twoRequestCause").val();
+				   if(twoRequestCause=='-1'){
+					   diaLog("请选择二级请求事由");
+					   return false;
+				   }
+				   
+				   //15、附件校验
+				   
+				   //判断是否是协作员，如果是，看积分是否大于200
+				    var userInfo=JSON.parse(localStorage.getItem("user"));
+					var isLiaisonMan = userInfo.isLiaisonMan;//是否是联络员
+					var myScoreCount = userInfo.scoreCount;//个人积分
+					if(isLiaisonMan==0&&myScoreCount<200){
+						diaLog("积分不足200");
+						return false;
+					}
+					$(this).attr("disabled",true);
+					var that=this;
+				    var form = $("#Form");
+				    //保存
+				    	var options  = {    
+								url:ctx+'/gongan/app/cooperation/doUpdateRadio.do',   
+								type:'post', 
+								data:{"status":1},
+								dataType:'json',
+								success:function(data) {
+									console.log(data)
+									$(that).removeAttr("disabled");
+									if(data.status==1){
+										window.location.href="myXieZuoList.html"
+									}else{
+										diaLog('保存失败');
+									}
+								},
+								error:function(){
+									$(that).removeAttr("disabled");
+									diaLog('error');
+								}
+							};    
+							form.ajaxSubmit(options);
+					});
+			   
+			    //-------------------------发送协作end
+			   
+
+			   //下拉框常量接口
+			  // heyushuo
+			   $.ajax({
+				   	type:"get",
+				   	url:ctx+"/gongan/app/dictionaries/getDictionaries.do?&parentId=-1",
+				   	async:true,
+				   	datatype:'json',
+				   	success:function(data){
+				   		if(data.status==1){
+				   			var str="";
+					   		var list=data.list;
+					   		for (var i=0;i<data.list.length;i++) {
+					   			str+="<option value="+list[i].id+">"+list[i].content+"</option>"
+					   		}
+					   		$("#requestCause").append(str);
+					   		$("#requestCause").val(requestCause);
+					   		$("#requestCause").trigger("change")
+				   		}
+				   	},
+				   	error:function(){
+				   		diaLog("error");
+				   	}
+			   });
+			   $("#requestCause").change(function(){
+			   		var str="";
+			   		var requestCause=$("#requestCause").val();
+			   		if(requestCause!=-1){
+			   			$.ajax({
+						   	type:"get",
+						   	url:ctx+"/gongan/app/dictionaries/getDictionaries.do?parentId="+requestCause,
+						   	async:true,
+						   	datatype:'json',
+						   	success:function(data){
+						   		var list=data.list;
+						   		for (var i=0;i<list.length;i++) {
+						   			str+="<option value="+list[i].id+">"+list[i].content+"</option>"
+						   		}
+						   		$("#twoRequestCause").html(str);
+						   		$("#twoRequestCause").val(twoRequestCause);
+						   	},
+						   	error:function(){
+						   		diaLog("error");
+						   	}
+					   });
+			   		}else{
+			   			$("#twoRequestCause").html(str);
+			   		}
+			   });
+			  //显示个人文件
+			$("#queryObjFilePath").on("change",function(e){
+				var name = e.currentTarget.files[0].name;
+				$("#fileName").text( name );
+			})
+			   
+
+});
+			//----------------------------查询对象详情start
+			//公共的弹出框
+			function commonOpen(url){
+		        layer.open({
+		            type: 2,
+		            title: false,
+		            closeBtn: 0, //不显示关闭按钮
+		           	area: ['100%', '100%'],
+		            offset: 'auto', //右下角弹出
+		            content: [url, 'no'] //iframe的url，no代表不显示滚动条
+		        });
+			}
+				//详情页
+		    function getTails(tableName,id){
+		    	if("caseQo"==tableName){
+		    		var url='queryObjList/queryCaseTail.html?id='+id;
+			        commonOpen(url);
+		    	}else if("intelligence"==tableName){
+		    		var url='queryObjList/queryCluesTail.html?id='+id;
+			        commonOpen(url);
+		    	}else if("virtualIdentity"==tableName){
+		    		var url='queryObjList/virtualIdentityTail.html?id='+id;
+				     commonOpen(url);
+		    	}else if("workObject"==tableName){
+		    		var url='queryObjList/workObjectTails.html?id='+id;
+				     commonOpen(url);
+		    	}else if("criminalSuspect"==tableName){
+		    		var url='queryObjList/criminalSuspectTails.html?id='+id;
+				    commonOpen(url);
+		    	}else if("eventQo"==tableName){
+		    		var url='queryObjList/eventQoTails.html?id='+id;
+				    commonOpen(url);
+		    	}else if("car"==tableName){
+		    		var url='queryObjList/carTails.html?id='+id;
+				    commonOpen(url);
+		    	}else if("phone"==tableName){
+		    		var url='queryObjList/phoneTails.html?id='+id;
+				    commonOpen(url);
+		    	}else if("otherQo"==tableName){
+		    		var url='queryObjList/otherQoTails.html?id='+id;
+				    commonOpen(url);
+		    	}else if("toolsOfCrime"==tableName){
+		    		var url='queryObjList/toolsOfCrimeTails.html?id='+id;
+				    commonOpen(url);
+		    	}else if("computor"==tableName){
+		    		var url='queryObjList/computerTails.html?id='+id;
+				    commonOpen(url);
+		    	}
+		    };
+			//----------------------------查询对象详情end
+				//1、删除查询对象
+        function doDelQueryObject(id,tableName,objectId,obj){
+        	var returnVal = window.confirm("确认删除数据？","警告");
+        	if(returnVal){
+        		$.ajax({
+  	  	      	  type: 'POST',
+  	  	      	  url: "/gongan/app/queryObject/doDelQueryObject.do",
+  	  	      	  data: {"id":id,"tableName":tableName,"objectId":objectId},
+  	  	      	  dataType:"json",
+  	  	      	  success: function(data){
+  	  	      		if(data.status=="1"){
+  						diaLog("删除成功");
+  	  	      			$(obj).parent().parent().remove();//移除该列数据
+  					}else{
+  						diaLog("删除失败");
+  					}
+  	  	      	  },
+  	  	      	  error:function(){
+  	  	      		  diaLog("error");
+  	  	      		 }
+          	 });
+        	}
+        	 
+        };	
+		
+		//删除附件
+		function delFiles(obj){
+			$(obj).parent().parent().remove();
+		}
+		//提交时，保存最后修改后的附件
+		function addFiles(){
+			var length=$(".urls-name").length;
+			var pathHtml='';
+			for(var i=0;i<length;i++){
+				pathHtml+=$(".urls-name").eq(i).val()+";";
+			}
+			$("#queryObjFilePath").val(pathHtml);
+		}
+        
+//      function setUploadUrl(fileName,url){
+// 			$("#queryObjFilePath").val(url);
+// 			$("#filename").val(fileName);
+// 			
+// 		}
+//文件下载和图片下载
+			function downloadfile(path) {
+			var fileUrl=ctx+"/gongan/ServletDownload?"+path;
+//          var fileUrl = server.pub.OaDownFile + businessid+"/"+name;
+            var encodeUrl=encodeURI(fileUrl);//文件的具体地址，具体到文件名称
+            console.log(encodeUrl);
+            console.log(fileUrl);
+           
+            console.log("下载文件地址"+encodeURI(encodeUrl));
+            var dtask = plus.downloader.createDownload(encodeUrl, { method: "GET" });//新建下载任务
+            var w = plus.nativeUI.showWaiting("开始下载...");
+            dtask.addEventListener("statechanged", function (task, status) {
+            	console.log(task.state)
+                switch (task.state) {
+                    case 3:	// 已接收到数据
+                        if (w) {
+                            w.setTitle("数据下载中：" + task.downloadedSize + "/" + task.totalSize);
+                        }
+                        break;
+                    case 4:	// 下载完成
+                        if (status == 200) {
+                            if (w) {
+                                w.close();
+                            }
+						var reg=/^.*(.jpg|.png|.gif|.ps|.jpeg|.webp)$/i;
+                           if(reg.test(task.filename)){
+                           		plus.gallery.save(task.filename, function() {
+							    mui.confirm("打开相册", "打开相册？", ["打开", "不看"], function(event) {
+							        var gindex = event.index;
+							        console.log(gindex)
+							        if(gindex == 0) {
+							            plus.gallery.pick(function(file) {
+							                mui.toast("你选择了图片：" + file);
+							            }, function(error) {
+							                console.log(error);
+							            }, {
+							                filter: 'image'
+							            });
+							        }
+							    });
+							});
+                           }else{
+                           	plus.runtime.openFile(task.filename, {}, function (e) {
+                                QxMobile.Alert("无法打开此文件：" + e.emssage);
+                            });
+                           }
+                          
+                        } else {
+                            Alert("下载失败：" + status);
+                            plus.nativeUI.closeWaiting();
+                        }
+                        break;
+                }
+            });
+            dtask.start();
+        }
+		</script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.go(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">修改协作</span></div>
+			<form id="Form" method="post">
+				<!-- 发起单位 -->
+				<input type="hidden"  name="departmentId" id="departmentId"  /><!--协作发起人所属部门  -->
+				<input type="hidden"  name="promoterUserId" id="promoterUserId"/>
+				<input type="hidden"  name="id" id="id"/><!-- 协作id -->
+				<div class="form">
+					<h1>请求信息</h1>
+					<div class="unit">
+						<label class="text" for="status">协作状态</label>
+						<input type="text"  id="status1" value="待申请" />
+					</div>
+					<div class="unit">
+						<label class="text" for="number">协作编号</label>
+						<input type="text" name="number" id="number" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="rewIntegral">悬赏积分</label>
+						<input type="text" name="rewIntegral" id="rewIntegral" value="10"/>
+					</div>
+					<div class="unit">
+						<label class="text" for="labelText">标签</label>
+						<input type="hidden" name="labelText" id="labelText" value="" />
+						<input type="text" name="labelName" id="labelName" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="userName">发起人姓名</label>
+						<input type="text" name="userName" id="userName" />
+					</div>
+					<div class="unit">
+						<label class="text" for="userPhone">发起人手机</label>
+						<input type="text" name="phone" id="userPhone" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="connectName">联系人姓名</label>
+						<input type="text" name="connectName" id="connectName" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="">联系人联系方式</label>
+						<input type="text" name="connectPhone" id="connectPhone"  />
+					</div>
+					<div class="unit">
+						<label class="text" for="title">标题</label>
+						<input type="text" name="title" id="title" value="" />
+					</div>
+				</div>
+				<div class="search-people">
+					<h1  class="border-none">查询对象列表<span id="addQueryObj" style="margin-right:1em;" class="pull-right">添加</span></h1>
+					<div class="scroll">
+				    	<table id="addSearchObj" class="zonghetongji" border="1" style="border-collapse: collapse;" >
+				    	<tr id="first"><td>操作</td><td>查询对象类别</td><td>查询对象名称</td><td>备注</td><td>增加时间</td></tr>
+					    </table>
+				    </div>
+				    <div class="send-unit1">
+					<div class="unit1">
+						<label class="text" for="cooperationType">协作类型</label>
+						<select id="cooperationType" name="cooperationType">
+							<option value="1">落地查证类</option>
+							<option value="2">信息查询类</option>
+						</select>
+					</div>
+					<div class="unit1">
+						<label class="text" for="timeLimit">反馈时限(小时)</label>
+						<input type="text" name="timeLimit" id="timeLimit" value="" />
+					</div>
+					</div>
+					<div class="xiezuo-content">
+						<h1 class="border-none">协作内容</h1>
+						<textarea id="cooperationContent" name="cooperationContent" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+					</div>
+					<div class="send-unit1">
+						<div class="unit1">
+							<label class="text" for="requestCauseId">请求事由</label>
+							<select id="requestCause" name="requestCauseId"> <!--shuo-->
+							</select>
+						</div>
+						<div class="unit1">
+							<label class="text" for="twoRequestCauseId">二级请求事件</label>
+							<select id="twoRequestCause" name="twoRequestCauseId">
+							<option></option>
+							</select>
+						</div>
+					</div>
+					<h1>上传附件</h1>
+					 <div  class="col-sm-3">
+					     <input type="hidden" class="form-control" id="queryObjFilePath" name="queryObjFilePath"/>
+					     <input type="file" class="form-control" id="filename" name="filename"/>
+				     </div>
+					<div>
+				    	<table class="downCommon" style="width: 100%;border-collapse: collapse;border: 1px solid #CBCBCB;text-align:center;" border="1" >
+				    		<tr id="files"></tr>
+					    </table>
+				    </div>
+						<div class="btnbox">
+						<input id="save" class="btn btn-width2 send" type="button" value="保存" />
+						</div>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>

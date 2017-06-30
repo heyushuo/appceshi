@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">反馈信息增加</span></div>
+			<form id="Form" method="post">
+				<input type="text" name="cooperationId" id="cooperationId" hidden="hidden" /> <!--协作id-->
+				<input type="text" name="feedBackUserId" id="feedBackUserId" hidden="hidden" /> <!--用户id-->
+				<input type="text" name="departmentId" id="departmentId" hidden="hidden" /> <!--部门id-->
+				<input type="text" name="cooperationDeptId" id="cooperationDeptId" hidden="hidden" /> <!--协作部门id-->
+				<div class="form" style="border: none;" >
+					<div class="xiezuo-content">
+						<h1>反馈内容</h1>
+						<textarea id="commentBack" name="commentBack" rows="" cols="" style="resize: none;" ></textarea>
+					</div>
+					<h1>上传附件</h1>
+					<!--<div align="left" class="a-upload fujian"><input name="filePath" id="filePath" class="files" type="file"/><span class="fileContent" >点击这里上传文件</span><span class="fileName"></span></div>-->
+					<div>
+					     <input type="hidden" id="queryObjFilePath" name="filePath"/>
+		     			<input type="button" value='添加附件' class="form-control" id="filename"/>
+				     </div>
+				     <div>
+				    	<table class="downCommon" style="width: 100%;border-collapse: collapse;border: 1px solid #CBCBCB;text-align:center;" border="1" >
+				    		<tr style="display: none;" id="files"></tr>
+					    </table>
+				    </div>
+					<div class="btnbox">
+						<input id="btnSure" class="btn btn-width1" type="button" value="确定" />
+						<input id="btnClose" class="btn btn-width1" type="button" value="关闭" />
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</body>
+</html>
+<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/layer2.1/layer.js"></script>
+<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	//上传文件弹出框
+	$("#filename").focus(function(){
+        layer.open({
+            type: 2,
+            title: false,
+            closeBtn: 0, //不显示关闭按钮
+           	area: ['100%', '100%'],
+            offset: 'auto', //右下角弹出
+            content: ['../upload.html', 'no'] //iframe的url，no代表不显示滚动条
+        });	
+		
+		
+	});
+	//回填数据
+	//用户的userid
+	var userInfo=JSON.parse(localStorage.getItem("user"));
+	var userId=userInfo.id;
+	var departmentId=userInfo.departmentId;
+	//协作id
+	var request=new UrlSearch();
+	$("#cooperationId").val(request.id);
+	$("#cooperationDeptId").val(request.cooperationDeptId);
+	$("#feedBackUserId").val(userId);
+	$("#departmentId").val(departmentId);
+	//添加反馈列表
+    $("#btnSure").click(function(){
+    		addFiles();
+    		var commentBack=$("#commentBack").val();
+    		if($.trim(commentBack)==undefined||$.trim(commentBack)==""){
+    			diaLog("请填写反馈内容");
+    			return false;
+    		}
+    		$("#btnSure").attr("disabled",true);
+ 	  	 	var form = $("#Form");  
+			var options  = {    
+				url:ctx+'/gongan/app/togetfeedback/doAdd.do',   
+				type:'post', 
+				dataType:'json',
+				success:function(data) {
+					$("#btnSure").removeAttr("disabled");
+					if(data.status==1){
+						window.location.href="daifankui.html";
+					}
+				},
+				error:function(){
+					$("#btnSure").removeAttr("disabled");
+					diaLog("请求失败");
+				}
+			};    
+			form.ajaxSubmit(options);
+ 	 });
+   	$("#btnClose").click(function(){
+   		window.location.href="daifankui.html";
+   	});
+   	  //删除附件
+		function delFiles(obj){
+			$(obj).parent().parent().remove();
+		}
+		//提交时，保存最后修改后的附件
+		function addFiles(){
+			var length=$(".urls-name").length;
+			var pathHtml='';
+			for(var i=0;i<length;i++){
+				pathHtml+=$(".urls-name").eq(i).val()+";";
+			}
+			$("#queryObjFilePath").val(pathHtml);
+		}
+   	//文件下载和图片下载
+	function downloadfile(path) {
+		var fileUrl=ctx+"/gongan/ServletDownload?"+path;
+//          var fileUrl = server.pub.OaDownFile + businessid+"/"+name;
+        var encodeUrl=encodeURI(fileUrl);//文件的具体地址，具体到文件名称
+        console.log(encodeUrl);
+        console.log(fileUrl);
+       
+        console.log("下载文件地址"+encodeURI(encodeUrl));
+        var dtask = plus.downloader.createDownload(encodeUrl, { method: "GET" });//新建下载任务
+        var w = plus.nativeUI.showWaiting("开始下载...");
+        dtask.addEventListener("statechanged", function (task, status) {
+        	console.log(task.state)
+            switch (task.state) {
+                case 3:	// 已接收到数据
+                    if (w) {
+                        w.setTitle("数据下载中：" + task.downloadedSize + "/" + task.totalSize);
+                    }
+                    break;
+                case 4:	// 下载完成
+                    if (status == 200) {
+                        if (w) {
+                            w.close();
+                        }
+					var reg=/^.*(.jpg|.png|.gif|.ps|.jpeg|.webp)$/i;
+                       if(reg.test(task.filename)){
+                       		plus.gallery.save(task.filename, function() {
+						    mui.confirm("打开相册", "打开相册？", ["打开", "不看"], function(event) {
+						        var gindex = event.index;
+						        console.log(gindex)
+						        if(gindex == 0) {
+						            plus.gallery.pick(function(file) {
+						                mui.toast("你选择了图片：" + file);
+						            }, function(error) {
+						                console.log(error);
+						            }, {
+						                filter: 'image'
+						            });
+						        }
+						    });
+						});
+                       }else{
+                       	plus.runtime.openFile(task.filename, {}, function (e) {
+                            QxMobile.Alert("无法打开此文件：" + e.emssage);
+                        });
+                       }
+                      
+                    } else {
+                        Alert("下载失败：" + status);
+                        plus.nativeUI.closeWaiting();
+                    }
+                    break;
+            }
+        });
+        dtask.start();
+    }
+</script>

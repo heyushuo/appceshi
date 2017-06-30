@@ -1,0 +1,137 @@
+.pic-head{
+	height: 1.5rem;
+	background: #1983D1;
+	position: relative;
+	overflow: hidden;
+	background-size: 100% 100%;
+}
+.pic-head .randInfo{
+	margin-top:0.1rem;
+	color:#FFFFFF;
+	text-align:center;
+}
+.my-zhezhao{
+	height: 0.3rem;
+	width: 100%;
+	line-height: 0.3rem;
+	color: white;
+	text-align: right;
+	font-weight: bold;
+	font-size: 0.16rem;
+}
+.my-zhezhao span{
+	margin-right: 0.1rem;
+}
+.login{
+	width: 0.6rem;
+	height: 0.6rem;
+	border-radius: 0.3rem;
+	font-weight: bold;
+	text-align: center;
+	font-size: 0.16rem;
+	margin:0 auto;
+	padding:1px 0px;
+}
+.login div{
+	width: 0.4rem;
+	height: 0.45rem;
+	padding-top:1px;
+	margin:0.07rem auto;	
+}
+.login p{
+}
+/*.my-content .iconfont{
+	font-size: 0.16rem;
+}*/
+.my-content ul{
+	background: #fff;
+}
+.tool{
+	padding: 0.06rem 0px;
+	/*background: #5276E5;*/
+	background: #ffffff;
+	color: #000000;
+	text-indent: 0.05rem;
+	margin-top: 0.1rem;
+	/*background: white;*/
+	border-bottom: 1px solid #CBCBCB;
+}
+.tool span{
+	padding: 0px 0px 0px 0.05rem;
+	font-size: 0.16rem;
+}
+.chuli li{
+	width: 25%;
+	padding: 0.15rem 0px;
+	text-align: center;
+	font-weight: bold;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	/* border: 1px solid #CBCBCB;
+	border-top: none;
+	border-left: none; */
+	border-right:1px solid #CBCBCB;
+	border-bottom:1px solid #CBCBCB;
+}
+.chuli li div{
+	margin: 0.05rem 0px;
+}
+.chuli li a{
+	color: #E64746;
+}
+.gongju li a{
+	color: #F2A93B;
+}
+.tongji li{
+	width: 33.3%;
+	padding: 0.15rem 0px;
+	text-align: center;
+	font-weight: bold;
+}
+.xiezuo li a{
+	color: #56ADFB;
+}
+/*.qiandao{
+	position: absolute;
+	height: 0.4rem;
+	width: 100%;
+	background: rgba(65,105,225,0.5);
+	z-index: 99;
+}*/
+.daiqianshou{
+	position: relative;
+}
+.daiqianshou span{
+	position: absolute;
+	right: 0.12rem;
+	top: 0.08rem;
+	padding: 0 0.07rem;
+	height: 0.2rem;
+	/*border: 0.05rem 1px #56ADFB;*/
+	border-radius: 0.1rem;
+	text-align: center;
+	line-height: 0.2rem;
+	color: white;
+	background: #FF3B30;
+	display: inline-block;
+	display:none;
+	font-size: 12px;
+	font-weight: normal;
+}
+/*.my{
+	position: relative;
+}
+.my span{
+	position: absolute;
+	right: 15px;
+	top: 3px;
+	width: 0.1rem;
+	height: 0.1rem;
+	border-radius: 0.15rem;
+	text-align: center;
+	line-height: 0.3rem;
+	color: white;
+	background: #E64746;
+	display: inline-block;
+}*/

@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>layer-更懂你的web弹窗解决方案</title>
+    
+    <script src="./js/jquery-1.7.2.min.js"></script>
+    <script src="./js/layer2.1/layer.js"></script>
+    <script src="./js/layer2.1/extend/layer.ext.js"></script>
+</head>
+
+<body style="height:10000px" >
+    <script>
+    //打开一个弹出层
+   function openDialLog(){
+	   /*
+       //iframe窗
+       layer.open({
+           type: 2,
+           title: false,
+           closeBtn: 0, //不显示关闭按钮
+           shade: [0],
+          //area: ['360px', '700px'],
+          	area: ['100%', '100%'],
+           offset: 'auto', //右下角弹出
+           //time: 2000, //2秒后自动关闭
+           shift: 2,
+           content: ['./view/deal/queryObjList/queryList.html', 'no'] //iframe的url，no代表不显示滚动条
+       });
+	   
+   	*/
+   }
+    
+    
+    function func11() {
+    	//loading层
+        var index = layer.load(1, {
+            shade: [1,'#B3B3B3'] //0.1透明度的白色背景
+        });
+    	
+    }
+    
+    function hello(){
+    	
+    	diaLog(1);
+    }
+    
+
+    </script>
+
+     <button id="func11" onclick="func11();">iframe窗</button>
+     <br/>
+     <button  onclick="hello();">hello</button>
+</body>
+
+</html>

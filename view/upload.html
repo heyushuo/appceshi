@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/faxiezuo.css"/>
+		<script src="../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/layer2.1/layer.js"></script>
+		<script src="../js/base.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<form id="fileForm" enctype="multipart/form-data">
+			<div class="box">
+				<div class="head"><a id="head" onclick="back()" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">上传附件</span></div>
+				<div class="form">
+					<h1 style="background: #6786ED;color: white;">上传文件</h1>
+						<div align="left" class="a-upload fujian"><input class="files" type="file" name="fileName" id="fileName"/ multiple="multiple"><span class="fileContent" >点击这里上传文件</span><span id="fileName1" class="fileName"></span></div>
+					<div>
+						<span id="uploading" style="color:red;display:none;">正在上传中...</span>
+					</div>
+					<div class="addBtn btnbox">
+						<input class="btn btn-width1" type="button" value="上传" id="uploadFile"/>
+						<input class="btn btn-width1" type="button" value="取消" onclick="back()" />
+					</div>
+				</div>
+			</div>
+		</form>
+	</body>
+</html>
+<script type="text/javascript">
+	function back(){
+   		var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+		parent.layer.close(index);
+   	}
+	window.onload=function(){
+		$("#fileName").change(function(){
+			if(this.files.length>1){
+				$("#fileName1").text(this.files.length+"个文件");
+			}else{
+				$("#fileName1").text(getFileName("#fileName"));
+			}
+			
+		})
+		$("#uploadFile").click(function(){
+			//var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			//parent.layer.close(index);
+			
+			$("#uploading").show();
+			$("#btn").attr("disabled","true");
+			var form = $("#fileForm");  
+			var options  = {    
+				url:ctx+"/gongan/admin/upload/uploadFile.do",   
+				type:'post', 
+				dataType:'json',
+				success:function(data) {
+					$("#uploading").hide();
+					$("#btn").removeAttr("disabled");
+					var url='';
+					var fileHtml='';
+					if(data.status=='1'){
+						var item=data.list;
+						for(var i=0;i<item.length;i++){
+							url ="url="+ item[i].url+"&filename="+item[i].filename;
+							//fileName += item[i].filename+";";
+							fileHtml += "<tr><td><input type=\"hidden\" class=\"urls-name\" value=\""+url+"\"><a title='"+item[i].filename+"' onclick='downloadfile(\""+url+"\")' href='javascript:;'>"+item[i].filename+"</a></td><td><a href=\"javascript:;\" onclick=\"delFiles(this)\">删除</a></td></tr>"
+						}
+						$("#files",parent.document.body).after(fileHtml);
+						var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+						parent.layer.close(index);
+					}else if(data.status=='2'){
+						alert("图片服务器异常！");
+					}else if(data.status=='3'){
+						alert("请选择文件！");
+					}else{
+						alert("上传失败！");
+					}
+				},
+				error:function(responseText, statusText){
+					$("#uploading").hide();
+					$("#btn").removeAttr("disabled");
+					alert("发送失败");
+				}
+			};    
+			form.ajaxSubmit(options);
+			
+//			
+//			
+//		
+//		  	var fileName=getFileName("#fileName");
+//			$("#uploading").show();
+//			$("#btn").attr("disabled","true");
+//			var form = $("#fileForm");  
+//			var options  = {    
+//				url:ctx+"/gongan/admin/upload/uploadFile.do",
+//				type:'post', 
+//				dataType:'json',
+//				success:function(data) {
+//					$("#uploading").hide();
+//					$("#uploadFile").removeAttr("disabled");
+//					if(data.status=='1'){
+//						window.parent.setUploadUrl(fileName,data.url);
+//						diaLog("上传成功");
+//						var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+//						parent.layer.close(index);
+//					}else{
+//						diaLog("上传失败");
+//					} 
+//				},
+//				error:function(responseText, statusText){
+//					$("#uploading").hide();
+//					$("#btn").removeAttr("disabled");
+//					diaLog("发送失败");
+//				}
+//			};    
+//			form.ajaxSubmit(options); 
+			
+	})
+   	function getFileName(obj){  
+        var fileName="";  
+        if(typeof(fileName) != "undefined")  
+        {  
+            fileName = $(obj).val().split("\\").pop();  
+            //fileName=fileName.substring(0, fileName.lastIndexOf("."));  
+        }  
+        return fileName;  
+ 	}  
+}
+</script>

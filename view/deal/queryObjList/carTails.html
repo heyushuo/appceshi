@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../css/faxiezuo.css"/>
+		<script src="../../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/layer2.1/layer.js"></script>
+    	<script src="../../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		
+		<script type="text/javascript">
+			$(function(){
+				
+			    var Request=new UrlSearch(); 
+				//加载页面详情内容
+				$.ajax({
+		  	      	  type: 'POST',
+		  	      	  url: ctx+"/gongan/app/queryObject/getCar.do",
+		  	      	  data: {"id":Request.id},
+		  	      	  dataType:"json",
+		  	      	  async:false,
+		  	      	  success: function(data){
+		  	      		  if(data.status=="1"){
+			  	      			var d=	new Date();
+								var eventTime;
+								if (typeof(data.eventTime) != "undefined"){
+			  	      				d.setTime(data.eventTime);
+			  	      				eventTime=d.format('yyyy-MM-dd HH:mm:ss');
+			  	      			}
+							
+		  	      			    $("#licenseNumber").val(data.licenseNumber);
+			  	      		    $("#frameNumber").val(data.frameNumber);
+				  	      	    $("#engineNumber").val(data.engineNumber);
+				  	      	    $("#carColor").val(data.carColor);
+				  	      		$("#carBrand").val(data.carBrand);
+				  	      		$("#carModel").val(data.carModel);
+		  	      	
+		  	      		  }else{
+		  	      			diaLog('数据加载异常');
+		  	      		  }
+		  	      	  },
+		  	      	  error:function(){
+		  	      		diaLog('error');
+		  	      	  }
+		        	 });
+				//关闭窗口
+				function closeWindow(){
+					var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			         parent.layer.close(index);//shidajian
+				}
+				$("#btnClose").click(function(){
+					closeWindow();
+				});
+			    $("#head").click(function(){
+			    	closeWindow();
+			    })
+			    
+			});
+		</script>
+	</head>
+	<body>
+	<form id="form">
+		<input type="hidden" name="queryObjTypeId" id="queryObjTypeId"/>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:;" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">查询对象信息增加</span></div>
+			<div class="form">
+				<h1 style="background: #6786ED;">查询对象信息增加</h1>
+				<div class="unit">
+					<label class="text" for="">车牌号</label>
+					<input type="text" class="pull-right" name="licenseNumber" id="licenseNumber" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">车架号</label>
+					<input type="text" class="pull-right" name="frameNumber" id="frameNumber" />
+				</div>
+				<div class="unit">
+					<label class="text" for="">发动机号</label>
+					<input type="text" class="pull-right" name="engineNumber" id="engineNumber"  />
+				</div>
+				<div class="unit">
+					<label class="text" for="">车身颜色</label>
+					<input type="text" class="pull-right" name="carColor" id="carColor"/>
+				</div>
+				<div class="unit">
+					<label class="text" for="">车辆品牌</label>
+					<input type="text" class="pull-right" name="carBrand" id="carBrand"/>
+				</div>
+				<div class="unit">
+					<label class="text" for="">车辆型号</label>
+					<input type="text" class="pull-right" name="carModel" id="carModel"/>
+				</div>
+				<div class="btnbox">
+					<input class="btn btn-width2" id="btnClose" type="button" value="返回" />
+				</div>
+			</div>
+		</div>
+	</form>
+	</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../css/faxiezuo.css"/>
+		<script src="../../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../js/layer2.1/layer.js"></script>
+    	<script src="../../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$(function(){
+			    var Request=new UrlSearch(); 
+				//加载页面详情内容
+				$.ajax({
+		  	      	  type: 'POST',
+		  	      	  url: ctx+"/gongan/app/queryObject/getOtherQo.do",
+		  	      	  data: {"id":Request.id},
+		  	      	  dataType:"json",
+		  	      	  async:false,
+		  	      	  success: function(data){
+		  	      		  if(data.status=="1"){
+		  	      			    $("#name").val(data.name);
+		  	      		  }else{
+		  	      			diaLog('数据加载异常');
+		  	      		  }
+		  	      	  },
+		  	      	  error:function(){
+		  	      		diaLog('数据加载异常');
+		  	      	  }
+		        	 });
+			    
+					//关闭窗口
+				function closeWindow(){
+					var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			         parent.layer.close(index);
+				}
+				$("#btnClose").click(function(){
+					closeWindow();
+				});
+			    $("#head").click(function(){
+			    	closeWindow();
+			    })
+			});
+		</script>
+	</head>
+	<body>
+		<form id="form">
+			<div class="box">
+				<div class="head"><a id="head" href="javascript:;" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">查询对象信息增加</span></div>
+				<div class="form">
+					<h1 style="background: #6786ED;">查询对象信息增加</h1>
+					<div class="unit">
+						<label class="text" for="">物件名称</label>
+						<input type="text" class="pull-right" name="name" id="name" />
+					</div>
+					<div class="btnbox">
+						<input id="btnClose" class="btn btn-width2" type="button" value="返回" />
+					</div>
+				</div>
+			</div>
+		</form>
+	</body>
+</html>

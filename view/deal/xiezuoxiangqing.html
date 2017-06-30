@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			//回填数据
+			var urlStr=document.location.search;
+		    var arr= urlStr.split("?");
+			id=arr[1].split("=")[1];
+			$.ajax({
+				type:"get",
+				url:ctx+"/gongan/app/cooperation/findCooperation.do?id="+id,
+				async:true,
+				datatype:'json',
+				success:function(data){
+					console.log(data);
+					if(data.status==1){
+						var str="";
+						var cooperMap=data.find.cooperMap;
+						var status=cooperMap.status;
+						
+						//通过判断状态展示不同的tab按钮
+						//是否有三个tab
+						if(cooperMap.cooperationDeptId!=-1){
+							if(status>=5 && status != 14 && status!=13){
+								var tabStr="<li class='active' onclick='tabChange(this)' >协作详情</li><li onclick='tabChange(this)'>反馈详情</li><li onclick='tabChange(this)'>评估详情</li>";
+							}else if(status==4){
+								//是否有两个tab,协作详情和反馈
+								var tabStr="<li style='width: 50%;' onclick='tabChange(this)' class='active'>协作详情</li><li onclick='tabChange(this)' style='width: 50%;'>反馈详情</li>";
+							}else if((status>=1&&status<=3) || status ==14 || status==13){
+								//只有一个详情
+								var tabStr="";
+							}
+						}else{
+							$("#hidecooperationDeptId").hide();
+							$("#hideMoney").hide();
+							$("#contentGuangbo").find("h1").html("广播内容");
+							if(status==1||status ==14){
+								var tabStr="";
+							}else if(status==3||status==12){
+								var tabStr="<li style='width: 50%;' onclick='tabChange(this)' class='active'>协作详情</li><li onclick='tabChange(this)' style='width: 50%;'>反馈详情</li>";
+							}
+						}
+						
+						//反馈列表详情
+						if(typeof(data.find.feedbackList)!='undefined'){
+							var itemFankui=data.find.feedbackList;
+							var strFankui="<tr><td width='5%'>操作</td><td width='15%'>反馈内容</td><td width='10%'>反馈单位</td><td width='5%'>反馈人</td><td width='10%'>反馈人联系方式</td><td width='13%'>反馈时间</td></tr>";
+							var d=new Date();
+							for(var j=0;j<itemFankui.length;j++){
+								var item=itemFankui[j];
+								var d=new Date();
+								var createDate="";
+								var feedBackId=item.id;
+								if (typeof(item.createDate) != "undefined"){
+					  				d.setTime(item.createDate);
+					  				createDate=d.format('yyyy-MM-dd HH:mm:ss');
+					  			}
+								strFankui+="<tr><td onclick='toTail("+feedBackId+")'>详情</td><td>"+item.commentBack+"</td><td>"+item.departmentName+"</td><td>"+item.feedBackUsrId+"</td><td>"+item.phone+"</td><td>"+createDate+"</td></tr>";
+							}
+							$("#addSearchObj1").html(strFankui);
+						}
+						//反馈列表详情结束
+						//评估详情
+						$("#feedbackGrade").val(cooperMap.feedbackGrade);//等级
+						$("#evaluationInstructions").val(cooperMap.evaluationInstructions);//评估说明
+						$("#evaluationScore").val(cooperMap.evaluationScore);//评估积分
+						$("#assessmentDetails").val(cooperMap.assessmentDetails);//评估详情
+						//评估详情结束
+						$("#tabChange").html(tabStr);
+						$("#status1").val(judgeStatus(status));
+						$("#number").val(cooperMap.number);//协作编号
+						$("#money").val(cooperMap.money)
+						$("#rewIntegral").val(cooperMap.rewIntegral);//悬赏积分
+						$("#labelName").val(cooperMap.labelText);//标签类型
+						$("#userName").val(cooperMap.promoterUserIdName);//发起人姓名
+						$("#userPhone").val(cooperMap.phone)//发起人手机
+						$("#connectName").val(cooperMap.connectName);//联系人姓名
+						$("#connectPhone").val(cooperMap.connectPhone);//联系人手机
+						$("#cooperationDeptId").val(cooperMap.cooperationDeptIdName);//协作单位
+						$("#title").val(cooperMap.title);//标题
+						var cooperationType="";
+						if (cooperMap.cooperationType==1) {
+							cooperationType="落地查询类";
+						}else if(cooperMap.cooperationType==2){
+							cooperationType="信息查询类";
+						}
+						if(cooperMap.returnReason!=""){
+							$("#returnReason").val(cooperMap.returnReason);//回退原因
+							$("#feedback").show();
+						}
+						
+						$("#cooperationType").find("option").text(cooperationType);//协作类型
+						$("#timeLimit").val(cooperMap.timeLimit);//反馈时间
+						$("#cooperationContent").val(cooperMap.cooperationContent);//协作内容
+						$("#requestCause").find("option").text(cooperMap.requestCause);//请求事由
+						$("#twoRequestCause").find("option").text(cooperMap.twoRequestCause);//二级请求事由
+						console.log(cooperMap.queryObjFilePath)
+						//var path = cooperMap.queryObjFilePath.length>0?cooperMap.queryObjFilePath:"";
+						if(typeof(cooperMap.queryObjFilePath)!="undefined"){
+							var files=cooperMap.queryObjFilePath;
+							var path=files.split(";");
+							var name='';
+							var fileHtml="";
+							for(var k=0;k<path.length-1;k++){
+								var filename=path[k].split("=")[2];
+								var url=path[k];
+								name +=filename+"&nbsp;";
+								fileHtml += "<tr><td><a href='javascript:;'>"+filename+"</a>&nbsp;</td><td width='30%' onclick='downloadfile(\""+url+"\")' >下载</td></tr>";
+							}
+							$("#files").html(fileHtml);
+						}
+						//------------------------------------------------------------------
+						//$("#fileName").attr("href","http://192.168.1.102:8080"+"/gongan/ServletDownload?url="+path);//文件路径
+						var list=data.find.queryObjectTypeList;
+						console.log(list);
+						if(list.length!=0){
+							var result="";
+							for(var i=0;i<list.length;i++){
+								var d=	new Date();
+								var queryInfoCreateDate;
+								if (typeof(list[i].createDate) != "undefined"){
+										d.setTime(list[i].createDate);
+										queryInfoCreateDate=d.format('yyyy-MM-dd HH:mm:ss');
+									}
+								result+="<tr><td><a href=\"javascript:;\" onclick=\"getTails('"+list[i].tableName+"',"+list[i].objectId+")\">查看&nbsp;</a></td><td>"+list[i].objectType+"</td><td>"+list[i].objectName+"</td><td>"+list[i].remarks+"</td><td>"+queryInfoCreateDate+"</td></tr>";
+							}
+						$("#addSearchObj").append(result);
+						}
+					}else{
+						diaLog("无数据");
+					}
+				},
+				error:function(){
+					diaLog("请求失败");
+				}
+				
+			});
+			
+			
+			//详情的tab切换
+				//tab切换
+				function tabChange(obg){
+					index=$(obg).index();
+					$(obg).addClass("active").siblings().removeClass("active");
+//					$(".common-tab").addClass("show").siblings().addClass("hide");
+					$(".common-tab").eq(index).css("display","block").siblings(".common-tab").css("display","none");
+				}
+					
+				
+			//----------------------------查询对象详情start
+			//公共的弹出框
+			function commonOpen(url){
+		        layer.open({
+		            type: 2,
+		            title: false,
+		            closeBtn: 0, //不显示关闭按钮
+		           	area: ['100%', '100%'],
+		            offset: 'auto', //右下角弹出
+		            content: [url, 'no'] //iframe的url，no代表不显示滚动条
+		        });
+			}
+			//详情页
+		     function getTails(tableName,id){
+		    	if("caseQo"==tableName){
+		    		var url='queryObjList/queryCaseTail.html?id='+id;
+		        	commonOpen(url);
+		    	}else if("intelligence"==tableName){
+		    		var url='queryObjList/queryCluesTail.html?id='+id;
+		        	commonOpen(url);
+		    	}else if("virtualIdentity"==tableName){
+		    		 var url='queryObjList/virtualIdentityTail.html?id='+id;
+			    	 commonOpen(url);
+		    	}else if("workObject"==tableName){
+		    		var url='queryObjList/workObjectTails.html?id='+id;
+			     	commonOpen(url);
+		    	}else if("criminalSuspect"==tableName){
+		    		var url='queryObjList/criminalSuspectTails.html?id='+id;
+			    	commonOpen(url);
+		    	}else if("eventQo"==tableName){
+		    		var url='queryObjList/eventQoTails.html?id='+id;
+			    	commonOpen(url);
+		    	}else if("car"==tableName){
+		    		var url='queryObjList/carTails.html?id='+id;
+			    	commonOpen(url);
+		    	}else if("phone"==tableName){
+		    		var url='queryObjList/phoneTails.html?id='+id;
+			   	 	commonOpen(url);
+		    	}else if("otherQo"==tableName){
+		    		var url='queryObjList/otherQoTails.html?id='+id;
+			    	commonOpen(url);
+		    	}else if("toolsOfCrime"==tableName){
+		    		var url='queryObjList/toolsOfCrimeTails.html?id='+id;
+			    	commonOpen(url);
+		    	}else if("computor"==tableName){
+		    		var url='queryObjList/computerTails.html?id='+id;
+			    	commonOpen(url);
+		    	}
+		    };
+			//12反馈详情
+			function toTail(id){
+				window.location.href="fankuixiangqing.html?id="+id;
+			}
+			//文件下载和图片下载
+			function downloadfile(path) {
+			var fileUrl=ctx+"/gongan/ServletDownload?"+path;
+//          var fileUrl = server.pub.OaDownFile + businessid+"/"+name;
+            var encodeUrl=encodeURI(fileUrl);//文件的具体地址，具体到文件名称
+            console.log(encodeUrl);
+            console.log(fileUrl);
+           
+            console.log("下载文件地址"+encodeURI(encodeUrl));
+            var dtask = plus.downloader.createDownload(encodeUrl, { method: "GET" });//新建下载任务
+            var w = plus.nativeUI.showWaiting("开始下载...");
+            dtask.addEventListener("statechanged", function (task, status) {
+            	console.log(task.state)
+                switch (task.state) {
+                    case 3:	// 已接收到数据
+                        if (w) {
+                            w.setTitle("数据下载中：" + task.downloadedSize + "/" + task.totalSize);
+                        }
+                        break;
+                    case 4:	// 下载完成
+                        if (status == 200) {
+                            if (w) {
+                                w.close();
+                            }
+						var reg=/^.*(.jpg|.png|.gif|.ps|.jpeg|.webp)$/i;
+                           if(reg.test(task.filename)){
+                           		plus.gallery.save(task.filename, function() {
+							    mui.confirm("打开相册", "打开相册？", ["打开", "不看"], function(event) {
+							        var gindex = event.index;
+							        console.log(gindex)
+							        if(gindex == 0) {
+							            plus.gallery.pick(function(file) {
+							                mui.toast("你选择了图片：" + file);
+							            }, function(error) {
+							                console.log(error);
+							            }, {
+							                filter: 'image'
+							            });
+							        }
+							    });
+							});
+                           }else{
+                           	plus.runtime.openFile(task.filename, {}, function (e) {
+                                QxMobile.Alert("无法打开此文件：" + e.emssage);
+                            });
+                           }
+                          
+                        } else {
+                            Alert("下载失败：" + status);
+                            plus.nativeUI.closeWaiting();
+                        }
+                        break;
+                }
+            });
+            dtask.start();
+        }
+		</script>
+	</head>
+	<body >
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">详情</span></div>
+			<div id="tabHead">
+				<ul class="tabChange clearfix" id="tabChange">
+			   		<!--<li class="active">协作详情</li>
+			   		<li>反馈详情</li>
+			   		<li>评估详情</li>-->
+			   	</ul>
+			</div>
+			<div id="xiezuoxiangqing" class="common-tab" >
+				<!-- 发起单位 -->
+				<input type="text" disabled="disabled" hidden="hidden"  name="departmentId" id="departmentId"  /><!--协作发起人所属部门  -->
+				<div class="form">
+					<h1>请求信息</h1>
+					<div class="unit">
+						<label class="text" for="status">协作状态</label>
+						<input type="text"  id="status1" value="待申请" />
+					</div>
+					<div class="unit">
+						<label class="text" for="number">协作编号</label>
+						<input type="text" name="number" id="number" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="rewIntegral">悬赏积分</label>
+						<input type="text" name="rewIntegral" id="rewIntegral" value="10" />
+					</div>
+					<div class="unit" id="hideMoney">
+						<label class="text" for="money">现金(元)</label>
+						<input type="text" name="money" id="money" value="0" />
+					</div>
+					<div class="unit">
+						<label class="text" for="labelText">标签</label>
+						<input type="hidden" name="labelText" id="labelText" value="" />
+						<input type="text" name="labelName" id="labelName" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="userName">发起人姓名:</label>
+						<input disabled="disabled" type="text" name="userName" id="userName" value="" />
+						<input disabled="disabled" type="text" hidden="hidden" name="promoterUserId" id="promoterUserId" value="" />
+					</div>
+					<!--<div class="unit">
+						<label class="text" for="userTel">发起人固话:</label>
+						<input disabled="disabled" type="text" name="userTel" id="userTel" value="" />
+					</div>-->
+					<div class="unit">
+						<label class="text" for="userPhone">发起人手机:</label>
+						<input disabled="disabled" type="text" name="userPhone" id="userPhone" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="connectName">联系人姓名:</label>
+						<input disabled="disabled" type="text" name="connectName" id="connectName" value="" />
+					</div>
+					<div class="unit">
+						<label class="text" for="">联系人联系方式:</label>
+						<input disabled="disabled" type="text" name="connectPhone" id="connectPhone" value="" />
+					</div>
+					<div class="unit" id="hidecooperationDeptId">
+						<label class="text" for="cooperationDeptId">协作单位:</label>
+						<input disabled="disabled" type="text" name="cooperationDeptId" id="cooperationDeptId" />
+					</div>
+					<div class="unit">
+						<label class="text" for="title">标题:</label>
+						<input disabled="disabled" type="text" name="title" id="title" value="" />
+					</div>
+				</div>
+				<div class="search-people">
+					<h1>查询对象列表</h1>
+					<!--<ul class="clearfix sp-nav">
+						<li><a href="javascript:;">模板下载</a></li>
+						<li><a href="javascript:;">导入</a></li>
+						<li><a href="addNew.html">增加</a></li>
+						<li><a href="javascript:;">删除</a></li>
+					</ul>-->
+					<div class="scroll" style="height:auto;">
+				    	<table id="addSearchObj" class="zonghetongji" border="1" style="border-collapse: collapse;" >
+					    	<tr><td>操作</td><td>查询对象类别</td><td>查询对象名称</td><td>备注</td><td>增加时间</td></tr>
+					    </table>
+				    </div>
+				    <div class="send-unit1">
+					<div class="unit1">
+						<label class="text" for="cooperationType">协作类型:</label>
+						<select disabled="disabled" id="cooperationType" name="cooperationType">
+							<option></option>
+						</select>
+					</div>
+					<div class="unit1">
+						<label class="text" for="timeLimit">反馈时限(小时):</label>
+						<input disabled="disabled"  type="text" id="timeLimit" name="timeLimit"/>
+					</div>
+					</div>
+					<div class="xiezuo-content" id="contentGuangbo">
+						<h1>协作内容</h1>
+						<textarea disabled="disabled" id="cooperationContent" name="cooperationContent" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+					</div>
+					<div class="send-unit1">
+					<div class="unit1">
+						<label class="text" for="requestCause">请求事由:</label>
+						<select disabled="disabled" id="requestCause" name="requestCause">
+							<option></option>
+						</select>
+					</div>
+					<div class="unit1">
+						<label class="text" for="twoRequestCause">二级请求事件:</label>
+						<select disabled="disabled" id="twoRequestCause" name="twoRequestCause">
+							<option></option>
+						</select>
+					</div>
+					</div>
+					<h1>下载附件</h1>
+					<div id="dowmFile">
+				    	<table class="downCommon" id="files" style="width: 100%;border-collapse: collapse;border: 1px solid #CBCBCB;text-align:center;" border="1" >
+					    </table>
+				    </div>
+				</div>
+				<div class="xiezuo-content search-people" id="feedback" style="display: none;">
+				    <h1>回退原因</h1>
+				   <textarea id="returnReason" ></textarea>
+				</div>
+			</div>
+			<!--反馈详情-->
+			<div id="fankuixiangqing" class="common-tab hide">
+				<div class="scroll">
+			    	<table id="addSearchObj1" class="zonghetongji" border="1" style="border-collapse: collapse;" >
+				    </table>
+			    </div>
+			</div>
+			<!--评估详情-->
+			<div id="pingguxiangqing" class="common-tab hide">
+				<div class="form">
+					<div class="unit">
+						<label class="text" for="feedbackGrade">等级</label>
+						<select name="feedbackGrade" id="feedbackGrade" disabled="disabled">
+							<option value="-1">请选择</option>
+							<option value="1">好评</option>
+							<option value="2">中评</option>
+							<option value="3">差评</option>
+						</select>
+					</div>
+					<div class="unit">  
+						<label class="text" for="evaluationInstructions">评估说明</label>
+						<select name="evaluationInstructions" id="evaluationInstructions" disabled="disabled">
+							<option value="-1">请选择</option>
+							<option value="1">反馈及时且内容完整</option>
+							<option value="2">反馈及时但内容缺失</option>
+							<option value="3">反馈内容不真实</option>
+							<option value="4">其他</option>
+						</select>
+					</div>
+					<div class="unit">
+						<label class="text" for="evaluationScore">评估积分</label>
+						<input  disabled="disabled" type="text" name="evaluationScore" id="evaluationScore">
+					</div>
+				</div>
+				<div class="form" style="border: none;padding: 0;" >
+					<div class="xiezuo-content" style="margin: 0;">
+						<h1>评估详情</h1>
+						<textarea id="assessmentDetails" disabled="disabled" name="" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+					</div>
+				</div>
+			</div>
+			<!--评估详情-->
+			
+			
+		</div>
+	</body>
+</html>

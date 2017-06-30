@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../../iconFont/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/xiezuozonghetongji.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/faxiezuo.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/pager.css"/>
+		<script src="../../js/Rem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery-1.7.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/layer2.1/layer.js"></script>
+		
+		<script src="../../js/base.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/pager.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/jquery.form.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="box">
+			<div class="head"><a id="head" href="javascript:history.back(-1);" class="back pull-left iconfont icon-zuojiantou"></a><span class="pull-left">申请加分详情</span></div>
+		    <form id="form">
+		    <input type="hidden" name="cooperationId" id="cooperationId"/><!-- 协作id -->
+		    <input type="hidden" name="helperUserId" id="helperUserId"/><!-- 反馈协作方id -->
+		    <div class="form" style="border-top: none;" >
+				<h1>请求信息</h1>
+				<div class="unit">
+					<label class="text" for="bonusScore">奖惩分值:</label>
+					<input type="text" name="rewardValue" id="rewardValue" />
+				</div>
+			</div>
+			<div class="form" style="border: none;"  >
+				<div class="xiezuo-content" style="margin-top: 0.1rem;">
+					<h1 class="border-none">申请奖惩理由</h1>
+					<textarea id="applyReason" name="applyReason" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+				</div>
+				<div class="xiezuo-content">
+					<h1 class="border-none">备注</h1>
+					<textarea id="remarks" name="remarks" rows="" cols="" placeholder="请输入500字以内,如果超过500字请以附件的形式上传,并在此注明" ></textarea>
+				</div>
+			</div>
+		    </form>
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	$(function(){
+		var urlData=new UrlSearch;
+		id=urlData.id;
+		$.ajax({
+			type:"get",
+			url:ctx+"/gongan/app/applyPoint/applyPointDetail.do?applyPointId="+id,
+			async:true,
+			dataType:"json",
+			success:function(data){
+				if(data.status==1){
+					var item=data.map;
+					var rewardValue=$("#rewardValue").val(item.rewardValue);//奖惩分值
+					var  applyReason=$("#applyReason").val(item.applyReason);//申请奖惩理由
+					var remarks=$("#remarks").val(item.remarks);//备注
+				}
+				
+			},
+			error:function(){
+				diaLog("error");
+			}
+		});
+	})
+</script>
